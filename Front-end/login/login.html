@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Connexion</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .login-container {
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      padding: 30px;
+      width: 350px;
+    }
+    .login-header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .login-header img {
+      max-width: 100px;
+      margin-bottom: 10px;
+    }
+    h2 {
+      color: #333;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      color: #555;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    .btn {
+      width: 100%;
+      padding: 12px;
+      background-color: #4a90e2;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-top: 10px;
+    }
+    .btn:hover {
+      background-color: #3a7bc8;
+    }
+    .error-message {
+      color: #e74c3c;
+      background-color: #fce4e4;
+      padding: 10px;
+      border-radius: 4px;
+      margin-bottom: 15px;
+    }
+  </style>
+</head>
+<body>
+  <div class="notification-container"></div>
+  <div class="login-container">
+    <div class="login-header">
+      <!-- <img src="icon/login.png" alt="Logo" class="logo"> -->
+      <h1><i class="fas fa-user-lock"></i></h1>
+      <h2>Système de Gestion</h2>
+    </div>
+    
+    <div id="error-message" class="error-message" style="display: none;"></div>
+    
+    <form id="login-form">
+      <div class="form-group">
+        <label for="email"><i class="fas fa-envelope"></i> Email</label>
+        <input type="email" id="email" name="email" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="password"><i class="fas fa-lock"></i> Mot de passe</label>
+        <input type="password" id="password" name="password" required>
+      </div>
+      
+      <button type="submit" class="btn">
+        <i class="fas fa-sign-in-alt"></i> Se connecter
+      </button>
+    </form>
+  </div>
+
+  <script src="../middleware/auth.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('login.html: DOM loaded');
+      
+      // Redirect if already logged in
+      if (Auth.isAuthenticated()) {
+        console.log('User already authenticated, redirecting to profil.html');
+        window.location.href = '../profile/profil.html';
+        return;
+      }
+      
+      // Handle login form submission
+      document.getElementById('login-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const errorMsg = document.getElementById('error-message');
+        
+        console.log(`Attempting to login with email: ${email}`);
+        
+        try {
+          errorMsg.style.display = 'none';
+          const user = await Auth.login(email, password);
+          console.log('Login successful:', user);
+          
+          // Check if we have center information
+          if (!user.structure || !user.structure.centre) {
+            console.warn('User is logged in but missing centre information!');
+          }
+          
+          // Redirect based on user role/permissions
+          window.location.href = '../profile/profil.html';
+        } catch (error) {
+          console.error('Login error:', error);
+          errorMsg.textContent = error.message || 'Erreur de connexion. Veuillez réessayer.';
+          errorMsg.style.display = 'block';
+        }
+      });
+    });
+  </script>
+</body>
+</html>

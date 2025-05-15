@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profil Administrateur</title>
+   
+    <link rel="stylesheet" href="profil.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+    <div class="notification-container"></div>
+    
+    <!-- Barre latérale de navigation -->
+    <nav class="sidebar">
+        <div class="sidebar-main">
+            <ul>
+                <li>
+                    <a href="profil.html" class="active">
+                        <img src="../icon/Profil.png" alt="Profile icon" class="icon">
+                        <span class="link-text">Profil</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="../Consommation/Consommation.html">
+                        <img src="../icon/Consommation.png" alt="Consumption icon" class="icon">
+                        <span class="link-text">Consommation</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="../cree-admin/creer-admin.html">
+                        <img src="../icon/cree-admin.png" alt="Admin icon" class="icon">
+                        <span class="link-text">Admin</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="../Demande/Demand.html">
+                        <img src="../icon/Demande.png" alt="Requests icon" class="icon">
+                        <span class="link-text">Demandes</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="../Bons/bons.html">
+                        <img src="../icon/Bons.png" alt="Vouchers icon" class="icon">
+                        <span class="link-text">Bons</span>
+                    </a>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-btn">
+                        <img src="../icon/Dashboard.png" alt="Dashboard icon" class="icon">
+                        <span class="link-text">Dashboard</span>
+                        <span class="dropdown-indicator">▼</span>
+                    </a>
+                    <ul class="dropdown-content">
+
+                        <li>
+                            <a href="../Dashboard/Analyse_General.html">General</a>
+                           </li>
+
+                        <li>
+                            <a href="../Dashboard/Analyse_Bons.html">
+                                <img src="../icon/A-Bons.png" alt="Vouchers analysis icon" class="icon">
+                                <span class="link-text">Bons</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="../Dashboard/Analyse_Demandes.html">
+                                <img src="../icon/Demande.png" alt="Requests analysis icon" class="icon">
+                                <span class="link-text">Demandes</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="../Dashboard/Analyse_Cartes.html">
+                                <img src="../icon/Carte.png" alt="Cards analysis icon" class="icon">
+                                <span class="link-text">Cartes</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="../Dashboard/Analyse_Directe.html">
+                                <img src="../icon/A-Direct.png" alt="Direct analysis icon" class="icon">
+                                <span class="link-text">Direct</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                
+            </ul>
+        </div>
+        
+        <div class="sidebar-footer">
+            <ul>
+                <li>
+                    <button id="sidebarToggle" class="sidebar-toggle">
+                        <img src="../icon/menus.png" alt="Menu toggle icon" class="icon">
+                        <span class="link-text">Toggle Menu</span>
+                    </button>
+                </li>
+                <li>
+                    <a href="#" class="logout-btn" id="logoutBtn">
+                        <img src="../icon/logout.png" alt="Logout icon" class="icon">
+                        <span class="link-text">Logout</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+
+   
+    <!-- Contenu principal -->
+    <main class="main-content">
+        <div class="profile-container">
+            <div class="profile-header">
+                <!-- Section Photo de profil -->
+                <div class="profile-photo-section">
+                   
+                    <div class="profile-photo">
+                        <img id="profilePhoto" src="../../Back-end/uploads/1742721251892.jpg" alt="Photo de profil">
+                        <div class="photo-upload">
+                            <label for="photoInput" class="upload-btn">
+                                <i class="fas fa-camera"></i>
+                            </label>
+                            <input type="file" id="photoInput" accept="image/*" style="display: none;">
+                            
+                        </div>
+                    </div>
+                    <div class="password-button-container">
+                        <button id="showPasswordForm" class="action-btn" >
+                            <i class="fas fa-key"></i>
+                            Modifier  le mot de passe 
+                         </button>
+                    </div>
+                </div>
+
+                <!-- Section Informations personnelles -->
+                <div class="profile-info-section">
+                    <div class="info-header">
+                        <h2>Informations Personnelles</h2>
+                    </div>
+                    <div class="info-content">
+                        <div class="info-group">
+                            <label>Nom:</label>
+                            <div class="input-with-button">
+                                <input type="text" id="nomInput" readonly>
+                                <button class="edit-btn" data-field="nom">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                               
+                            </div>
+                        </div>
+                        <div class="info-group">
+                            <label>Email:</label>
+                            <div class="input-with-button">
+                                <input type="email" id="emailInput" readonly>
+                                <button class="edit-btn" data-field="email">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="role-group">
+                            <label>Rôle:</label>
+                            <input type="text" id="roleInput" readonly value="Administrateur">
+                        </div>
+                       
+                    </div>
+                </div>
+            </div>
+
+            <!-- Après la section des informations personnelles -->
+            <div class="dynamic-content">
+                <!-- Section Structure et Permissions (visible par défaut) -->
+                <div id="mainContent">
+                    <div class="structure-section">
+                        <h2>Structure</h2>
+                        <div class="structure-grid">
+                            <div class="structure-item">
+                                <h3>Centre</h3>
+                                <p id="centreName">Nom: <span></span></p>
+                                <p id="centreLocation">Localisation: <span></span></p>
+                            </div>
+                            <div class="structure-item">
+                                <h3>District</h3>
+                                <p id="districtName">Nom: <span></span></p>
+                                <p id="districtLocation">Localisation: <span></span></p>
+                            </div>
+                            <div class="structure-item">
+                                <h3>Branche</h3>
+                                <p id="branchName">Nom: <span></span></p>
+                                <p id="branchLocation">Localisation: <span></span></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="permissions-section">
+                        <h2>Permissions</h2>
+                        <div id="permissionsContainer" class="permissions-grid">
+                            <!-- Les permissions seront ajoutées ici dynamiquement -->
+                        </div>
+                    </div>
+
+                    
+                </div>
+
+                <!-- Section Changement de mot de passe (cachée par défaut) -->
+                <div id="passwordSection" class="password-section" style="display: none;">
+                    <div class="section-header">
+                        <h2>Modification du mot de passe</h2>
+                    </div>
+                    <form id="passwordForm" class="password-form">
+                        <div class="form-group">
+                            <label for="currentPassword">Mot de passe actuel</label>
+                            <input type="password" id="currentPassword" required>
+                            <span class="form-error">Veuillez entrer votre mot de passe actuel</span>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="newPassword">Nouveau mot de passe</label>
+                            <input type="password" id="newPassword" required>
+                            <span class="form-error">Le mot de passe doit contenir au moins 8 caractères</span>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="confirmPassword">Confirmation du nouveau mot de passe</label>
+                            <input type="password" id="confirmPassword" required>
+                            <span class="form-error">Les mots de passe ne correspondent pas</span>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="button" class="cancel-btn" id="cancelPasswordChange">
+                                <i class="fas fa-arrow-left"></i>
+                                Retour
+                            </button>
+                            <button type="submit" class="submit-btn">
+                                <i class="fas fa-save"></i>
+                                Enregistrer
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Sidebar functionality
+            const sidebar = document.querySelector('.sidebar');
+            const content = document.querySelector('.main-content');
+            const toggleBtn = document.getElementById('sidebarToggle');
+        
+            // Initialize with transition disabled
+            sidebar.classList.add('sidebar-initializing');
+            content.classList.add('sidebar-initializing');
+        
+            // Function to set sidebar state
+            function setSidebarState(isCollapsed) {
+                if (isCollapsed) {
+                    sidebar.classList.add('collapsed');
+                    content.classList.add('sidebar-collapsed');
+                } else {
+                    sidebar.classList.remove('collapsed');
+                    content.classList.remove('sidebar-collapsed');
+                }
+                localStorage.setItem('sidebarCollapsed', isCollapsed);
+            }
+        
+            // Initialize sidebar state
+            const savedState = localStorage.getItem('sidebarCollapsed');
+            setSidebarState(savedState === 'true');
+        
+            // Toggle button click handler
+            toggleBtn.addEventListener('click', function() {
+                const isCurrentlyCollapsed = sidebar.classList.contains('collapsed');
+                setSidebarState(!isCurrentlyCollapsed);
+            });
+        
+            // Dropdown functionality
+            const dropdowns = document.querySelectorAll('.dropdown');
+            dropdowns.forEach(dropdown => {
+                const dropdownBtn = dropdown.querySelector('.dropdown-btn');
+                dropdownBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    dropdowns.forEach(d => {
+                        if (d !== dropdown) d.classList.remove('active');
+                    });
+                    dropdown.classList.toggle('active');
+                });
+            });
+        
+            // Remove initialization class after brief delay
+            setTimeout(() => {
+                sidebar.classList.remove('sidebar-initializing');
+                content.classList.remove('sidebar-initializing');
+            }, 50);
+        
+            // Close dropdowns when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.dropdown')) {
+                    dropdowns.forEach(d => d.classList.remove('active'));
+                }
+            });
+        });
+        </script>
+
+
+
+
+    <script src="../middleware/auth.js"></script>
+    <script src="../middleware/page-protection.js"></script>
+    <script src="profil.js"></script>
+    
+</body>
+</html> 

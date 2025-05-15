@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Créer un Admin</title>
+    <link rel="stylesheet" href="creer-admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+    <div class="notification-container"></div>
+    
+    <!-- Barre latérale de navigation -->
+   <!-- Barre latérale de navigation -->
+   <nav class="sidebar">
+    <div class="sidebar-main">
+        <ul>
+            <li>
+                <a href="../profile/profil.html">
+                    <img src="../icon/Profil.png" alt="Profile icon" class="icon">
+                    <span class="link-text">Profil</span>
+                </a>
+            </li>
+            <li>
+                <a href="../Consommation/Consommation.html">
+                    <img src="../icon/Consommation.png" alt="Consumption icon" class="icon">
+                    <span class="link-text">Consommation</span>
+                </a>
+            </li>
+            <li>
+                <a href="creer-admin.html" class="active">
+                    <img src="../icon/cree-admin.png" alt="Admin icon" class="icon">
+                    <span class="link-text">Admin</span>
+                </a>
+            </li>
+            <li>
+                <a href="../Demande/Demand.html">
+                    <img src="../icon/Demande.png" alt="Requests icon" class="icon">
+                    <span class="link-text">Demandes</span>
+                </a>
+            </li>
+            <li>
+                <a href="../Bons/bons.html">
+                    <img src="../icon/Bons.png" alt="Vouchers icon" class="icon">
+                    <span class="link-text">Bons</span>
+                </a>
+            </li>
+            <li class="dropdown">
+                <a href="#" class="dropdown-btn">
+                    <img src="../icon/Dashboard.png" alt="Dashboard icon" class="icon">
+                    <span class="link-text">Dashboard</span>
+                    <span class="dropdown-indicator">▼</span>
+                </a>
+                <ul class="dropdown-content">
+
+                    <li>
+                        <a href="../Dashboard/Analyse_General.html">General</a>
+                       </li>
+
+                    <li>
+                        <a href="../Dashboard/Analyse_Bons.html">
+                            <img src="../icon/A-Bons.png" alt="Vouchers analysis icon" class="icon">
+                            <span class="link-text">Bons</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../Dashboard/Analyse_Demandes.html">
+                            <img src="../icon/Demande.png" alt="Requests analysis icon" class="icon">
+                            <span class="link-text">Demandes</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../Dashboard/Analyse_Cartes.html">
+                            <img src="../icon/Carte.png" alt="Cards analysis icon" class="icon">
+                            <span class="link-text">Cartes</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../Dashboard/Analyse_Directe.html">
+                            <img src="../icon/A-Direct.png" alt="Direct analysis icon" class="icon">
+                            <span class="link-text">Direct</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+          
+        </ul>
+    </div>
+    
+    <div class="sidebar-footer">
+        <ul>
+            <li>
+                <button id="sidebarToggle" class="sidebar-toggle">
+                    <img src="../icon/menus.png" alt="Menu toggle icon" class="icon">
+                    <span class="link-text">Toggle Menu</span>
+                </button>
+            </li>
+            <li>
+                <a href="#" class="logout-btn" id="logoutBtn">
+                    <img src="../icon/logout.png" alt="Logout icon" class="icon">
+                    <span class="link-text">Logout</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</nav>
+<script >  
+    document.addEventListener("DOMContentLoaded", function() {
+        // Get elements
+        const sidebar = document.querySelector('.sidebar');
+        const content = document.querySelector('.main-content');
+        const toggleBtn = document.getElementById('sidebarToggle');
+    
+        sidebar.classList.add('sidebar-initializing');
+        content.classList.add('sidebar-initializing');
+    
+        
+        // Dropdown functionality
+        let dropdowns = document.querySelectorAll(".dropdown");
+        dropdowns.forEach(dropdown => {
+            let dropdownBtn = dropdown.querySelector(".dropdown-btn");
+            dropdownBtn.addEventListener("click", function(e) {
+                e.preventDefault();
+                dropdown.classList.toggle("active");
+            });
+        });
+        
+    
+         // Remove the initializing class after a brief delay to restore transitions
+         setTimeout(function() {
+            sidebar.classList.remove('sidebar-initializing');
+            content.classList.remove('sidebar-initializing');
+        }, 50);
+        
+    
+    
+        // Function to set sidebar state
+        function setSidebarState(isCollapsed) {
+            if (isCollapsed) {
+                sidebar.classList.add('collapsed');
+                content.classList.add('sidebar-collapsed');
+            } else {
+                sidebar.classList.remove('collapsed');
+                content.classList.remove('sidebar-collapsed');
+            }
+            // Save to localStorage
+            localStorage.setItem('sidebarCollapsed', isCollapsed);
+        }
+        
+        // Check saved state when page loads, default to open if no state is saved
+        const savedState = localStorage.getItem('sidebarCollapsed');
+            if (savedState !== null) {
+                setSidebarState(savedState === 'false');
+            } else {
+                // Default state is collapsed
+                setSidebarState(true);
+            }
+         
+       //////
+    
+    
+        // Toggle button functionality
+        toggleBtn.addEventListener('click', function() {
+            const currentState = sidebar.classList.contains('collapsed');
+            setSidebarState(!currentState); // Toggle the state
+        });
+    });
+    </script>
+
+    <!-- Contenu principal -->
+    <main class="main-content">
+        <div class="create-admin-container">
+            <div class="form-header">
+                <h1><i class="fas fa-user-plus"></i> Créer un Administrateur</h1>
+            </div>
+
+            <form id="createAdminForm">
+                <!-- Informations de base -->
+                <div class="form-section">
+                    <h2>Informations personnelles</h2>
+                    <div class="form-group">
+                        <label for="nom">Nom complet</label>
+                        <input type="text" id="nom" name="nom" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Mot de passe</label>
+                        <input type="password" id="password" name="password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirmer le mot de passe</label>
+                        <input type="password" id="confirmPassword" name="confirmPassword" required>
+                    </div>
+                </div>
+
+                <!-- Sélection du rôle et structure -->
+                <div class="form-section">
+                    <h2>Rôle et Structure</h2>
+                    <div class="form-group">
+                        <label for="role">Rôle</label>
+                        <select id="role" name="role" required>
+                            <option value="">Sélectionner un rôle</option>
+                            <option value="Administrateur Centre">Admin Centre</option>
+                            <option value="Administrateur Branche">Admin Branche</option>
+                            <option value="Administrateur District">Admin District</option>
+                        </select>
+                    </div>
+
+                    <!-- Conteneurs dynamiques pour les structures -->
+                    <div id="centreContainer" class="form-group structure-select" style="display: none;">
+                        <label for="centre">Centre</label>
+                        <select id="centre" name="centre" required>
+                            <option value="">Sélectionner un centre</option>
+                        </select>
+                    </div>
+
+                    <div id="brancheContainer" class="form-group structure-select" style="display: none;">
+                        <label for="branche">Branche</label>
+                        <select id="branche" name="branche" required>
+                            <option value="">Sélectionner une branche</option>
+                        </select>
+                    </div>
+
+                    <div id="districtContainer" class="form-group structure-select" style="display: none;">
+                        <label for="district">District</label>
+                        <select id="district" name="district" required>
+                            <option value="">Sélectionner un district</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Permissions -->
+                <div class="form-section">
+                    <h2>Permissions</h2>
+                    <div class="permissions-grid">
+                        <div class="permission-item">
+                            <input type="checkbox" id="consultation" name="permissions" value="consultation">
+                            <label for="consultation">
+                                <i class="fas fa-eye"></i>
+                                Consultation
+                            </label>
+                        </div>
+                        <div class="permission-item">
+                            <input type="checkbox" id="creer_admin" name="permissions" value="creer_admin">
+                            <label for="creer_admin">
+                                <i class="fas fa-user-plus"></i>
+                                Créer Admin
+                            </label>
+                        </div>
+                        <div class="permission-item">
+                            <input type="checkbox" id="envoyer_demande" name="permissions" value="envoyer_demande">
+                            <label for="envoyer_demande">
+                                <i class="fas fa-paper-plane"></i>
+                                Envoyer Demande
+                            </label>
+                        </div>
+                        <div class="permission-item">
+                            <input type="checkbox" id="attribuer_bons" name="permissions" value="attribuer_bons">
+                            <label for="attribuer_bons">
+                                <i class="fas fa-ticket-alt"></i>
+                                Attribuer Bons
+                            </label>
+                        </div>
+                        <div class="permission-item">
+                            <input type="checkbox" id="remplir_formulaire_consommation" name="permissions" value="remplir_formulaire_consommation">
+                            <label for="remplir_formulaire_consommation">
+                                <i class="fas fa-file-alt"></i>
+                                Remplir Formulaire
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Boutons d'action -->
+                <div class="form-actions">
+                    <button type="button" class="cancel-btn" onclick="window.history.back()">
+                        <i class="fas fa-times"></i> Annuler
+                    </button>
+                    <button type="submit" class="submit-btn">
+                        <i class="fas fa-user-plus"></i> Créer l'administrateur
+                    </button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <script src="../middleware/auth.js"></script>
+    <script src="../middleware/page-protection.js"></script>
+    <script src="creer-admin.js"></script>
+</body>
+</html> 

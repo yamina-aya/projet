@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Bons</title>
+    <link rel="stylesheet" href="bons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+    <div class="notification-container"></div>
+    
+    <!-- Barre latérale de navigation -->
+    <nav class="sidebar">
+        <div class="sidebar-main">
+            <ul>
+                <li>
+                    <a href="../profile/profil.html" >
+                        <img src="../icon/Profil.png" alt="Profile icon" class="icon">
+                        <span class="link-text">Profil</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="../Consommation/Consommation.html">
+                        <img src="../icon/Consommation.png" alt="Consumption icon" class="icon">
+                        <span class="link-text">Consommation</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="../cree-admin/creer-admin.html">
+                        <img src="../icon/cree-admin.png" alt="Admin icon" class="icon">
+                        <span class="link-text">Admin</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="../Demande/Demand.html">
+                        <img src="../icon/Demande.png" alt="Requests icon" class="icon">
+                        <span class="link-text">Demandes</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="bons.html"  class="active">
+                        <img src="../icon/Bons.png" alt="Vouchers icon" class="icon">
+                        <span class="link-text">Bons</span>
+                    </a>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-btn">
+                        <img src="../icon/Dashboard.png" alt="Dashboard icon" class="icon">
+                        <span class="link-text">Dashboard</span>
+                        <span class="dropdown-indicator">▼</span>
+                    </a>
+                    <ul class="dropdown-content">
+
+                        <li>
+                            <a href="../Dashboard/Analyse_General.html">General</a>
+                           </li>
+                        <li>
+
+                            <a href="../Dashboard/Analyse_Bons.html">
+                                <img src="../icon/A-Bons.png" alt="Vouchers analysis icon" class="icon">
+                                <span class="link-text">Bons</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="../Dashboard/Analyse_Demandes.html">
+                                <img src="../icon/Demande.png" alt="Requests analysis icon" class="icon">
+                                <span class="link-text">Demandes</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="../Dashboard/Analyse_Cartes.html">
+                                <img src="../icon/Carte.png" alt="Cards analysis icon" class="icon">
+                                <span class="link-text">Cartes</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="../Dashboard/Analyse_Directe.html">
+                                <img src="../icon/A-Direct.png" alt="Direct analysis icon" class="icon">
+                                <span class="link-text">Direct</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+              
+            </ul>
+        </div>
+        
+        <div class="sidebar-footer">
+            <ul>
+                <li>
+                    <button id="sidebarToggle" class="sidebar-toggle">
+                        <img src="../icon/menus.png" alt="Menu toggle icon" class="icon">
+                        <span class="link-text">Toggle Menu</span>
+                    </button>
+                </li>
+                <li>
+                    <a href="#" class="logout-btn" id="logoutBtn">
+                        <img src="../icon/logout.png" alt="Logout icon" class="icon">
+                        <span class="link-text">Logout</span>
+                    </a>
+                </li>
+        </ul>
+        </div>
+    </nav>
+    <script >  
+        document.addEventListener("DOMContentLoaded", function() {
+            // Get elements
+            const sidebar = document.querySelector('.sidebar');
+            const content = document.querySelector('.main-content');
+            const toggleBtn = document.getElementById('sidebarToggle');
+        
+            sidebar.classList.add('sidebar-initializing');
+            content.classList.add('sidebar-initializing');
+        
+            
+            // Dropdown functionality
+            let dropdowns = document.querySelectorAll(".dropdown");
+            dropdowns.forEach(dropdown => {
+                let dropdownBtn = dropdown.querySelector(".dropdown-btn");
+                dropdownBtn.addEventListener("click", function(e) {
+                    e.preventDefault();
+                    dropdown.classList.toggle("active");
+                });
+            });
+            
+        
+             // Remove the initializing class after a brief delay to restore transitions
+             setTimeout(function() {
+                sidebar.classList.remove('sidebar-initializing');
+                content.classList.remove('sidebar-initializing');
+            }, 50);
+            
+        
+        
+            // Function to set sidebar state
+            function setSidebarState(isCollapsed) {
+                if (isCollapsed) {
+                    sidebar.classList.add('collapsed');
+                    content.classList.add('sidebar-collapsed');
+                } else {
+                    sidebar.classList.remove('collapsed');
+                    content.classList.remove('sidebar-collapsed');
+                }
+                // Save to localStorage
+                localStorage.setItem('sidebarCollapsed', isCollapsed);
+            }
+            
+             // Check saved state when page loads, default to open if no state is saved
+             const savedState = localStorage.getItem('sidebarCollapsed');
+            if (savedState !== null) {
+                setSidebarState(savedState === 'false');
+            } else {
+                // Default state is collapsed
+                setSidebarState(true);
+            }
+             
+           //////
+        
+        
+            // Toggle button functionality
+            toggleBtn.addEventListener('click', function() {
+                const currentState = sidebar.classList.contains('collapsed');
+                setSidebarState(!currentState); // Toggle the state
+            });
+        });
+        </script>
+
+    <!-- Contenu principal -->
+    <main class="main-content">
+        <!--<div class="header">
+            <h1>Gestion des Bons</h1>
+            <div id="currentAdminIdDisplay" class="admin-id-display">
+               
+            </div>
+        </div>
+    -->
+        <!-- Onglets de navigation -->
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="suivi">Suivi des Bons</button>
+            <button class="tab-btn" data-tab="attribution">Attribution des Bons</button>
+            <button class="tab-btn" data-tab="restitution">Restitution des Bons</button>
+        </div>
+
+        <!-- Page de suivi des bons -->
+        <div id="suiviPage" class="page active">
+            <div class="filter-section">
+                <div class="search-container">
+                    <input type="text" id="searchBon" placeholder="Rechercher un bon...">
+                    <i class="fas fa-search search-icon"></i>
+                </div>
+                <div class="filter-group">
+                    <select id="typeFilter">
+                        <option value="">Type de bon</option>
+                        <option value="1000 DA">1000 DA</option>
+                        <option value="1200 DA">1200 DA</option>
+                        <option value="2000 DA">2000 DA</option>
+                    </select>
+                    <select id="statusFilter">
+                        <option value="">Statut de consommation</option>
+                        <option value="consommé">Consommé</option>
+                        <option value="non consommé">Non consommé</option>
+                    </select>
+                    <div class="date-filter">
+                        <label>Du:</label>
+                        <input type="date" id="startDate">
+                        <label>Au:</label>
+                        <input type="date" id="endDate">
+                    </div>
+                    <button id="resetFilter" class="btn-reset">
+                        <i class="fas fa-undo"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="bons-list" id="bonsList">
+                <div class="bons-table">
+                    <div class="bons-header">
+                        <div class="bon-cell">ID</div>
+                        <div class="bon-cell">Type</div>
+                        <div class="bon-cell">Statut</div>
+                        <div class="bon-cell">Date</div>
+                        <div class="bon-cell">Chauffeur</div>
+                        <div class="bon-cell">Centre</div>
+                        <div class="bon-cell">Actions</div>
+                    </div>
+                    <div class="bons-body" id="bonsBody">
+                        <!-- Sera rempli par JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Page d'attribution des bons -->
+        <div id="attributionPage" class="page">
+            <div class="form-container">
+                <h2>Attribution de Bons</h2>
+                <form id="attributionForm">
+                    <div class="form-group">
+                        <label for="currentCenterAttribution">Centre Actuel:</label>
+                        <input type="text" id="currentCenterAttribution" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="currentAdminAttribution">Administrateur:</label>
+                        <input type="text" id="currentAdminAttribution" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="driverAttribution">Chauffeur:</label>
+                        <select id="driverAttribution" required>
+                            <option value="">Sélectionner un chauffeur...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Date d'Attribution:</label>
+                        <input type="date" id="attributionDate" >
+                    </div>
+
+                    <div class="bons-selection">
+                        <h3>Sélection des Bons</h3>
+                        <div class="filter-mini">
+                            <input type="text" id="searchBonAttribution" placeholder="Rechercher un bon...">
+                            <select id="typeBonAttribution">
+                                <option value="">Tous les types</option>
+                                <option value="1000 DA">1000 DA</option>
+                                <option value="1200 DA">1200 DA</option>
+                                <option value="2000 DA">2000 DA</option>
+                            </select>
+                        </div>
+                        <div class="bons-checklist" id="bonsChecklist">
+                            <!-- Sera rempli par JavaScript -->
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button id="submitAttribution" type="submit" class="btn-primary">Attribuer les Bons</button>
+                        <button id="cancelAttribution" type="button" class="btn-secondary">Annuler</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Page de restitution des bons -->
+        <div id="restitutionPage" class="page">
+            <div class="form-container">
+                <h2>Restitution de Bons</h2>
+                <form id="restitutionForm">
+                    <div class="form-group">
+                        <label for="currentCenterRestitution">Centre Actuel:</label>
+                        <input type="text" id="currentCenterRestitution" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="currentAdminRestitution">Administrateur:</label>
+                        <input type="text" id="currentAdminRestitution" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="driverRestitution">Chauffeur:</label>
+                        <select id="driverRestitution" required>
+                            <option value="">Sélectionner un chauffeur...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Date de Restitution:</label>
+                        <input type="date" id="restitutionDate" required>
+                    </div>
+
+                    <div class="bons-selection">
+                        <h3>Bons à Restituer</h3>
+                        <div class="bons-checklist" id="restitutionChecklist">
+                            <!-- Sera rempli par JavaScript -->
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary" id="restitutionButton">Restituer les Bons</button>
+                        <button type="button" class="btn-secondary" id="cancelRestitution">Annuler</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal pour les détails d'un bon -->
+    <div id="bonDetailsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Détails du Bon</h2>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="details-section" id="bonGeneralInfo">
+                    <h3>Informations Générales</h3>
+                    <!-- Sera rempli par JavaScript -->
+                </div>
+                <div class="details-section" id="attributionInfo">
+                    <h3>Informations d'Attribution</h3>
+                    <!-- Sera rempli par JavaScript -->
+                </div>
+                <div class="details-section" id="restitutionInfo">
+                    <h3>Informations de Restitution</h3>
+                    <!-- Sera rempli par JavaScript -->
+                </div>
+                <div class="details-section" id="consommationInfo">
+                    <h3>Informations de Consommation</h3>
+                    <!-- Sera rempli par JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="bons.js"></script>
+    <script src="../middleware/auth.js"></script>
+    <script src="../middleware/page-protection.js"></script>
+</body>
+</html> 

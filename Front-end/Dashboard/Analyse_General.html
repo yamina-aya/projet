@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau de Bord Analyse Générale</title>
+    <link rel="stylesheet" href="Analyse_General.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="notification-container"></div>
+    
+    <!-- Barre latérale de navigation -->
+    <nav class="sidebar">
+        <div class="sidebar-main">
+            <ul>
+                <li>
+                    <a href="../profile/profil.html">
+                        <img src="../icon/Profil.png" alt="Profile icon" class="icon">
+                        <span class="link-text">Profil</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="../Consommation/Consommation.html">
+                        <img src="../icon/Consommation.png" alt="Consumption icon" class="icon">
+                        <span class="link-text">Consommation</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="../cree-admin/creer-admin.html">
+                        <img src="../icon/cree-admin.png" alt="Admin icon" class="icon">
+                        <span class="link-text">Admin</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="../Demande/Demand.html">
+                        <img src="../icon/Demande.png" alt="Requests icon" class="icon">
+                        <span class="link-text">Demandes</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="../Bons/bons.html">
+                        <img src="../icon/Bons.png" alt="Vouchers icon" class="icon">
+                        <span class="link-text">Bons</span>
+                    </a>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-btn">
+                        <img src="../icon/Dashboard.png" alt="Dashboard icon" class="icon">
+                        <span class="link-text">Dashboard</span>
+                        <span class="dropdown-indicator">▼</span>
+                    </a>
+                    <ul class="dropdown-content">
+                       <li>
+                        <a href="Analyse_General.html">General</a>
+                       </li>
+                        <li>
+                            <a href="Analyse_Bons.html">
+                                <img src="../icon/A-Bons.png" alt="Vouchers analysis icon" class="icon">
+                                <span class="link-text">Bons</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="Analyse_Demandes.html">
+                                <img src="../icon/Demande.png" alt="Requests analysis icon" class="icon">
+                                <span class="link-text">Demandes</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="Analyse_Cartes.html">
+                                <img src="../icon/Carte.png" alt="Cards analysis icon" class="icon">
+                                <span class="link-text">Cartes</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="Analyse_Directe.html">
+                                <img src="../icon/A-Direct.png" alt="Direct analysis icon" class="icon">
+                                <span class="link-text">Direct</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+               
+            </ul>
+        </div>
+        
+        <div class="sidebar-footer">
+            <ul>
+                <li>
+                    <button id="sidebarToggle" class="sidebar-toggle">
+                        <img src="../icon/menus.png" alt="Menu toggle icon" class="icon">
+                        <span class="link-text">Toggle Menu</span>
+                    </button>
+                </li>
+                <li>
+                    <a href="login.html" class="logout-btn" id="logoutBtn">
+                        <img src="../icon/logout.png" alt="Logout icon" class="icon">
+                        <span class="link-text">Logout</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+   
+    <!-- Contenu principal -->
+    <main class="main-content">
+        <div class="dashboard-container">
+            <h1>Analyse Générale</h1>
+            <br><br>
+            
+            <!-- Section des cartes de résumé -->
+            <div class="summary-cards">
+                <div class="summary-card">
+                    <div class="card-header">
+                        <div class="card-title">Consommation Totale</div>
+                        <div class="card-icon"><i class="fas fa-gas-pump"></i></div>
+                    </div>
+                    <div class="card-value" id="totalConsumptionLiters">-</div>
+                    <div class="card-value" id="totalConsumptionCost">-</div>
+                    <div class="card-change" id="consumptionChange">
+                        <i class="fas"></i>
+                        <span>-</span>
+                    </div>
+                </div>
+                
+                <div class="summary-card">
+                    <div class="card-header">
+                        <div class="card-title">Évolution Annuelle</div>
+                        <div class="card-icon"><i class="fas fa-chart-line"></i></div>
+                    </div>
+                    <div class="card-value" id="yearlyEvolution">-</div>
+                    <div class="card-change" id="yearlyChange">
+                        <i class="fas"></i>
+                        <span>-</span>
+                    </div>
+                </div>
+                
+                <div class="summary-card">
+                    <div class="card-header">
+                        <div class="card-title">Type le Plus Utilisé</div>
+                        <div class="card-icon"><i class="fas fa-trophy"></i></div>
+                    </div>
+                    <div class="card-value" id="mostUsedType">-</div>
+                    <div class="card-change" id="typePercentage">
+                        <span>-</span>
+                    </div>
+                </div>
+                
+                <div class="summary-card">
+                    <div class="card-header">
+                        <div class="card-title">Coût Moyen</div>
+                        <div class="card-icon"><i class="fas fa-money-bill-wave"></i></div>
+                    </div>
+                    <div class="card-value" id="averageCost">-</div>
+                    <div class="card-change" id="costChange">
+                        <i class="fas"></i>
+                        <span>-</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Filtres pour les graphiques -->
+            <div class="filter-container">
+                <select class="filter-select" id="entityFilter">
+                    <option value="all">Tous les centres</option>
+                </select>
+                <select class="filter-select" id="timeFilterCharts">
+                    <option value="day">Par Jour</option>
+                    <option value="month">Par Mois</option>
+                    <option value="year">Par Année</option>
+                </select>
+                <select class="filter-select" id="yearFilter">
+                </select>
+                <input type="date" id="startDate" class="filter-select">
+                <input type="date" id="endDate" class="filter-select">
+            </div>
+
+            <!-- Tabs pour basculer entre interfaces -->
+            <div class="tabs-container">
+                <div class="tabs">
+                    <div class="tab" data-tab="charts">Graphiques</div>
+                    <div class="tab" data-tab="tables">Top Performances</div>
+                    <div class="tab" data-tab="anomalies">Anomalies</div>
+                    <div class="tab" data-tab="transactions">Transactions</div>
+                </div>
+            </div>
+            
+            <!-- Charts Content -->
+            <div id="charts" class="tab-content active">
+                <div class="charts-container">
+                    <div class="top-charts">
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <h3 class="chart-title">Distribution par type</h3>
+                                <div class="view-toggle">
+                                    <button class="toggle-btn active" data-view="chart" data-target="typeDistribution">
+                                        <i class="fas fa-chart-pie"></i>
+                                    </button>
+                                    <button class="toggle-btn" data-view="table" data-target="typeDistribution">
+                                        <i class="fas fa-table"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="view-content chart-view active" id="typeDistributionChart">
+                                <canvas></canvas>
+                            </div>
+                            <div class="view-content table-view" id="typeDistributionTable">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Type</th>
+                                            <th>Quantité</th>
+                                            <th>Pourcentage</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Will be filled dynamically -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <h3 class="chart-title">Consommation mensuelle</h3>
+                                <div class="view-toggle">
+                                    <button class="toggle-btn active" data-view="chart" data-target="monthlyConsumption">
+                                        <i class="fas fa-chart-line"></i>
+                                    </button>
+                                    <button class="toggle-btn" data-view="table" data-target="monthlyConsumption">
+                                        <i class="fas fa-table"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="view-content chart-view active" id="monthlyConsumptionChart">
+                                <canvas></canvas>
+                            </div>
+                            <div class="view-content table-view" id="monthlyConsumptionTable">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Période</th>
+                                            <th>Quantité</th>
+                                            <th>Evolution</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Will be filled dynamically -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bottom-charts">
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <h3 class="chart-title">Comparaison par type</h3>
+                                <div class="view-toggle">
+                                    <button class="toggle-btn active" data-view="chart" data-target="typeComparison">
+                                        <i class="fas fa-chart-bar"></i>
+                                    </button>
+                                    <button class="toggle-btn" data-view="table" data-target="typeComparison">
+                                        <i class="fas fa-table"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="view-content chart-view active" id="typeComparisonChart">
+                                <canvas></canvas>
+                            </div>
+                            <div class="view-content table-view" id="typeComparisonTable">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Période</th>
+                                            <th>Direct</th>
+                                            <th>Bons</th>
+                                            <th>Demandes</th>
+                                            <th>Cartes</th>
+                                            <th>Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Will be filled dynamically -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Performance Tables Content -->
+            <div id="tables" class="tab-content">
+                <div class="filter-container">
+                    <select class="filter-select" id="performanceTypeFilter">
+                        <option value="all">Tous les types</option>
+                        <option value="drivers">Chauffeurs</option>
+                        <option value="admins">Administrateurs</option>
+                        <option value="vehicles">Véhicules</option>
+                    </select>
+                    <select class="filter-select" id="performanceMetricFilter">
+                        <option value="consumption">Consommation</option>
+                        <option value="transactions">Transactions</option>
+                        <option value="cost">Coût</option>
+                    </select>
+                </div>
+                <div class="table-card">
+                    <table class="data-table" id="performanceTable">
+                        <thead>
+                            <tr>
+                                <th>Nom</th>
+                                <th>Type</th>
+                                <th>Centre</th>
+                                <th>Total</th>
+                                <th>% du Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Will be filled dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Anomalies Content -->
+            <div id="anomalies" class="tab-content">
+                <div class="table-card">
+                    <table class="data-table" id="anomaliesTable">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Type</th>
+                                <th>Description</th>
+                                <th>Sévérité</th>
+                                <th>Statut</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Will be filled dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Transactions Content -->
+            <div id="transactions" class="tab-content">
+                <div class="filter-container">
+                    <select class="filter-select" id="transactionTypeFilter">
+                        <option value="all">Tous les types</option>
+                        <option value="direct">Consommation Directe</option>
+                        <option value="demand">Demandes</option>
+                        <option value="bon">Bons</option>
+                        <option value="card">Cartes</option>
+                    </select>
+                    <select class="filter-select" id="transactionEntityFilter">
+                        <option value="all">Toutes les entités</option>
+                        <option value="driver">Chauffeurs</option>
+                        <option value="admin">Administrateurs</option>
+                        <option value="vehicle">Véhicules</option>
+                    </select>
+                </div>
+                <div class="table-card">
+                    <table class="data-table" id="transactionsTable">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Type</th>
+                                <th>Entité</th>
+                                <th>Description</th>
+                                <th>Quantité</th>
+                                <th>Montant</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Will be filled dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="../middleware/auth.js"></script>
+    <script src="../middleware/page-protection.js"></script>
+    <script src="summary-cards.js"></script>
+    <script src="Analyse_General.js"></script>
+</body>
+</html>

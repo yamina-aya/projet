@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau de Bord Cartes</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.22/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="Analyse_Cartes.css">
+
+   <script>  
+        document.addEventListener("DOMContentLoaded", function() {
+            // Get elements
+            const sidebar = document.querySelector('.sidebar');
+            const content = document.querySelector('.main-content');
+            const toggleBtn = document.getElementById('sidebarToggle');
+        
+            sidebar.classList.add('sidebar-initializing');
+            content.classList.add('sidebar-initializing');
+        
+            
+            // Dropdown functionality
+            let dropdowns = document.querySelectorAll(".dropdown");
+            dropdowns.forEach(dropdown => {
+                let dropdownBtn = dropdown.querySelector(".dropdown-btn");
+                dropdownBtn.addEventListener("click", function(e) {
+                    e.preventDefault();
+                    dropdown.classList.toggle("active");
+                });
+            });
+            
+        
+             // Remove the initializing class after a brief delay to restore transitions
+             setTimeout(function() {
+                sidebar.classList.remove('sidebar-initializing');
+                content.classList.remove('sidebar-initializing');
+            },50);
+            
+        
+        
+            // Function to set sidebar state
+            function setSidebarState(isCollapsed) {
+                if (isCollapsed) {
+                    sidebar.classList.add('collapsed');
+                    content.classList.add('sidebar-collapsed');
+                } else {
+                    sidebar.classList.remove('collapsed');
+                    content.classList.remove('sidebar-collapsed');
+                }
+                // Save to localStorage
+                localStorage.setItem('sidebarCollapsed', isCollapsed);
+            }
+            
+            // Check saved state when page loads, default to open if no state is saved
+            const savedState = localStorage.getItem('sidebarCollapsed');
+            if (savedState !== null) {
+                setSidebarState(savedState === 'false');
+            } else {
+                // Default state is collapsed
+                setSidebarState(true);
+            }
+            
+                
+        
+            // Toggle button functionality
+            toggleBtn.addEventListener('click', function() {
+                const currentState = sidebar.classList.contains('collapsed');
+                setSidebarState(!currentState); // Toggle the state
+            });
+        });
+        </script>
+
+</head>
+<body>
+    <div class="notification-container"></div>
+    
+    <!-- Barre latérale de navigation -->
+    <nav class="sidebar">
+        <div class="sidebar-main">
+            <ul>
+                <li>
+                    <a href="../profile/profil.html" ">
+                        <img src="../icon/Profil.png" alt="Profile icon" class="icon">
+                        <span class="link-text">Profil</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="../Consommation/Consommation.html">
+                        <img src="../icon/Consommation.png" alt="Consumption icon" class="icon">
+                        <span class="link-text">Consommation</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="../cree-admin/creer-admin.html">
+                        <img src="../icon/cree-admin.png" alt="Admin icon" class="icon">
+                        <span class="link-text">Admin</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="../Demande/Demand.html">
+                        <img src="../icon/Demande.png" alt="Requests icon" class="icon">
+                        <span class="link-text">Demandes</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="../Bons/bons.html">
+                        <img src="../icon/Bons.png" alt="Vouchers icon" class="icon">
+                        <span class="link-text">Bons</span>
+                    </a>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-btn">
+                        <img src="../icon/Dashboard.png" alt="Dashboard icon" class="icon">
+                        <span class="link-text">Dashboard</span>
+                        <span class="dropdown-indicator">▼</span>
+                    </a>
+                    <ul class="dropdown-content">
+                       <li>
+                        <a href="Analyse_General.html">General</a>
+                       </li>
+                        <li>
+                        
+                            <a href="Analyse_Bons.html">
+                                <img src="../icon/A-Bons.png" alt="Vouchers analysis icon" class="icon">
+                                <span class="link-text">Bons</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="Analyse_Demandes.html">
+                                <img src="../icon/Demande.png" alt="Requests analysis icon" class="icon">
+                                <span class="link-text">Demandes</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="Analyse_Cartes.html">
+                                <img src="../icon/Carte.png" alt="Cards analysis icon" class="icon">
+                                <span class="link-text">Cartes</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="Analyse_Directe.html">
+                                <img src="../icon/A-Direct.png" alt="Direct analysis icon" class="icon">
+                                <span class="link-text">Direct</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+               
+            </ul>
+        </div>
+        
+        <div class="sidebar-footer">
+            <ul>
+                <li>
+                    <button id="sidebarToggle" class="sidebar-toggle">
+                        <img src="../icon/menus.png" alt="Menu toggle icon" class="icon">
+                        <span class="link-text">Toggle Menu</span>
+                    </button>
+                </li>
+                <li>
+                    <a href="logout.html" class="logout-btn">
+                        <img src="../icon/logout.png" alt="Logout icon" class="icon">
+                        <span class="link-text">Logout</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-title">
+                <h1>Tableau de Bord Consommation Cartes</h1>
+                <p>Analyse de l'utilisation des cartes de carburant</p>
+            </div>
+            <div class="header-actions">
+                <div class="date-range">
+                    <i class="far fa-calendar-alt"></i>
+                    <input type="text" id="daterange" name="daterange" value="" readonly>
+                </div>
+                <button id="exportBtn" class="btn btn-primary">
+                    <i class="fas fa-download"></i> Exporter
+                </button>
+            </div>
+        </div>
+
+        <!-- Statistics Row -->
+        <div class="statistics">
+            <div class="stat-card">
+                <div class="stat-card-body">
+                    <div class="stat-card-icon">
+                        <i class="fas fa-credit-card"></i>
+                    </div>
+                    <div class="stat-card-info">
+                        <h3 class="stat-card-title">Cartes Actives</h3>
+                        <p class="stat-card-value" id="activeCards">0</p>
+                    </div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-body">
+                    <div class="stat-card-icon">
+                        <i class="fas fa-gas-pump"></i>
+                    </div>
+                    <div class="stat-card-info">
+                        <h3 class="stat-card-title">Consommation Totale</h3>
+                        <p class="stat-card-value" id="totalLiters">0 L</p>
+                    </div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-body">
+                    <div class="stat-card-icon">
+                        <i class="fas fa-money-bill-wave"></i>
+                    </div>
+                    <div class="stat-card-info">
+                        <h3 class="stat-card-title">Montant Total</h3>
+                        <p class="stat-card-value" id="totalAmount">0 DA</p>
+                    </div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-body">
+                    <div class="stat-card-icon">
+                        <i class="fas fa-tachometer-alt"></i>
+                    </div>
+                    <div class="stat-card-info">
+                        <h3 class="stat-card-title">Consommation Moyenne</h3>
+                        <p class="stat-card-value" id="avgTransaction">0 L</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="content-tabs">
+            <ul class="nav nav-tabs" id="dashboardTabs" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="charts-tab" data-toggle="tab" href="#charts" role="tab" aria-controls="charts" aria-selected="true">
+                        <i class="fas fa-chart-line"></i> Graphiques
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="tables-tab" data-toggle="tab" href="#tables" role="tab" aria-controls="tables" aria-selected="false">
+                        <i class="fas fa-table"></i> Tableaux
+                    </a>
+                </li>
+            </ul>
+            <div class="tab-content" id="dashboardTabsContent">
+                <!-- Charts Tab -->
+                <div class="tab-pane fade show active" id="charts" role="tabpanel" aria-labelledby="charts-tab">
+                    <div class="row">
+                        <!-- Trend Chart -->
+                        <div class="col-md-8">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5>Tendance de Consommation</h5>
+                                    <div class="period-selector">
+                                        <button class="btn btn-sm btn-outline-primary active" data-period="week">Semaine</button>
+                                        <button class="btn btn-sm btn-outline-primary" data-period="month">Mois</button>
+                                        <button class="btn btn-sm btn-outline-primary" data-period="year">Année</button>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="chart-container">
+                                        <canvas id="trendChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Centers Chart -->
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5>Consommation par Centre</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="chart-container">
+                                        <canvas id="centersChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Anomalies Section -->
+                    <div class="row mt-4">
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5>Anomalies Détectées</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-striped" id="anomaliesTable">
+                                            <thead>
+                                                <tr>
+                                                    <th>Numéro de Carte</th>
+                                                    <th>Chauffeur</th>
+                                                    <th>Quantité (L)</th>
+                                                    <th>Date</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <!-- Data will be loaded dynamically -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Tables Tab -->
+                <div class="tab-pane fade" id="tables" role="tabpanel" aria-labelledby="tables-tab">
+                    <div class="row">
+                        <!-- Recent Transactions Table -->
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5>Transactions Récentes</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-striped" id="transactionsTable">
+                                            <thead>
+                                                <tr>
+                                                    <th>Numéro de Carte</th>
+                                                    <th>Chauffeur</th>
+                                                    <th>Centre</th>
+                                                    <th>Date</th>
+                                                    <th>Quantité (L)</th>
+                                                    <th>Montant (DA)</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <!-- Data will be loaded dynamically -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+        </div>
+        
+                    <!-- Top Performers Table -->
+                    <div class="row mt-4">
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5>Top Consommateurs</h5>
+                                    <div class="d-flex">
+                                        <div class="form-group mr-3 mb-0">
+                                            <select id="performerType" class="form-control form-control-sm">
+                                                <option value="driver">Chauffeurs</option>
+                                                <option value="center">Centres</option>
+                                                <option value="district">Districts</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group mb-0">
+                                            <select id="performerMetric" class="form-control form-control-sm">
+                                                <option value="quantity">Par Quantité</option>
+                                                <option value="amount">Par Montant</option>
+                                                <option value="count">Par Nombre de transactions</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-striped" id="performersTable">
+                                            <thead>
+                                                <tr>
+                                                    <th>Nom</th>
+                                                    <th>Valeur</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <!-- Data will be loaded dynamically -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap4.min.js"></script>
+    <script src="Analyse_Cartes.js"></script>
+</body>
+</html>

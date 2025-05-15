@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau de Bord Analyse des Bons</title>
+    <link rel="stylesheet" href="Analyse_Bons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
+</head>
+<body>
+    <div class="notification-container"></div>
+    
+    <!-- Barre latérale de navigation -->
+    <nav class="sidebar">
+        <div class="sidebar-main">
+            <ul>
+                <li>
+                    <a href="../profile/profil.html">
+                        <img src="../icon/Profil.png" alt="Profile icon" class="icon">
+                        <span class="link-text">Profil</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="../Consommation/Consommation.html">
+                        <img src="../icon/Consommation.png" alt="Consumption icon" class="icon">
+                        <span class="link-text">Consommation</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="../cree-admin/creer-admin.html">
+                        <img src="../icon/cree-admin.png" alt="Admin icon" class="icon">
+                        <span class="link-text">Admin</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="../Demande/Demand.html">
+                        <img src="../icon/Demande.png" alt="Requests icon" class="icon">
+                        <span class="link-text">Demandes</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="../Bons/bons.html">
+                        <img src="../icon/Bons.png" alt="Vouchers icon" class="icon">
+                        <span class="link-text">Bons</span>
+                    </a>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-btn">
+                        <img src="../icon/Dashboard.png" alt="Dashboard icon" class="icon">
+                        <span class="link-text">Dashboard</span>
+                        <span class="dropdown-indicator">▼</span>
+                    </a>
+                    <ul class="dropdown-content">
+                       <li>
+                        <a href="Analyse_General.html">General</a>
+                       </li>
+                        <li>
+                            <a href="Analyse_Bons.html">
+                                <img src="../icon/A-Bons.png" alt="Vouchers analysis icon" class="icon">
+                                <span class="link-text">Bons</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="Analyse_Demandes.html">
+                                <img src="../icon/Demande.png" alt="Requests analysis icon" class="icon">
+                                <span class="link-text">Demandes</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="Analyse_Cartes.html">
+                                <img src="../icon/Carte.png" alt="Cards analysis icon" class="icon">
+                                <span class="link-text">Cartes</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="Analyse_Directe.html">
+                                <img src="../icon/A-Direct.png" alt="Direct analysis icon" class="icon">
+                                <span class="link-text">Direct</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        
+        <div class="sidebar-footer">
+            <ul>
+                <li>
+                    <button id="sidebarToggle" class="sidebar-toggle">
+                        <img src="../icon/menus.png" alt="Menu toggle icon" class="icon">
+                        <span class="link-text">Toggle Menu</span>
+                    </button>
+                </li>
+                <li>
+                    <a href="login.html" class="logout-btn" id="logoutBtn">
+                        <img src="../icon/logout.png" alt="Logout icon" class="icon">
+                        <span class="link-text">Déconnexion</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+   
+    <!-- Contenu principal -->
+    <main class="main-content">
+        <div class="dashboard-container">
+            <div class="dashboard-header">
+                <h1>Analyse des Bons de Carburant</h1>
+                <div class="date-filter">
+                    <select id="period-filter" class="filter-select">
+                        <option value="semaine">Semaine </option>
+                        <option value="mois">Mois </option>
+                        <option value="annee">Année </option>
+                        <option value="personnalise">Période Personnalisée</option>
+                    </select>
+                    <div id="custom-date-range" style="display: none;">
+                        <input type="date" id="start-date" class="date-input">
+                        <input type="date" id="end-date" class="date-input">
+                        <button id="apply-date-btn" class="apply-btn">Appliquer</button>
+                    </div>
+                    <select id="entity-filter" class="filter-select">
+                        <option value="all">Tous les Centres</option>
+                        <option value="branche">Ma Branche</option>
+                        <option value="district">Mon District</option>
+                        <option value="centre">Mon Centre</option>
+                    </select>
+                    <div id="center-select-container" style="display: none;">
+                        <select id="center-select" class="filter-select">
+                            <option value="">Chargement des centres...</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Section des cartes de résumé -->
+            <div class="summary-cards">
+                <div class="summary-card">
+                    <div class="card-header">
+                        <div class="card-title">Total des Bons</div>
+                        <div class="card-icon"><i class="fas fa-ticket-alt"></i></div>
+                    </div>
+                    <div class="card-value" id="total-bons">0</div>
+                    <div class="card-change change-up">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>0% vs période précédente</span>
+                    </div>
+                </div>
+                
+                <div class="summary-card">
+                    <div class="card-header">
+                        <div class="card-title">Bons Attribués</div>
+                        <div class="card-icon"><i class="fas fa-share-square"></i></div>
+                    </div>
+                    <div class="card-value" id="bons-attribues">0</div>
+                    <div class="card-change change-up">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>0% vs période précédente</span>
+                    </div>
+                </div>
+                
+                <div class="summary-card">
+                    <div class="card-header">
+                        <div class="card-title">Bons Retournés</div>
+                        <div class="card-icon"><i class="fas fa-undo"></i></div>
+                    </div>
+                    <div class="card-value" id="bons-retournes">0</div>
+                    <div class="card-change change-up">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>0% vs période précédente</span>
+                    </div>
+                </div>
+                
+                <div class="summary-card">
+                    <div class="card-header">
+                        <div class="card-title">Bons Utilisés</div>
+                        <div class="card-icon"><i class="fas fa-check-circle"></i></div>
+                    </div>
+                    <div class="card-value" id="bons-utilises">0</div>
+                    <div class="card-change change-up">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>0% vs période précédente</span>
+                    </div>
+                </div>
+                
+                <div class="summary-card">
+                    <div class="card-header">
+                        <div class="card-title">Bons Disponibles</div>
+                        <div class="card-icon"><i class="fas fa-clipboard-list"></i></div>
+                    </div>
+                    <div class="card-value" id="bons-disponibles">0</div>
+                    <div class="card-change change-down">
+                        <i class="fas fa-arrow-down"></i>
+                        <span>0% vs période précédente</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tabs pour basculer entre graphiques et tableaux -->
+            <div class="tabs-container">
+                <div class="tabs">
+                    <button class="tab-btn active" data-tab="charts-tab">Graphiques</button>
+                    <button class="tab-btn" data-tab="tables-tab">Tableaux</button>
+                    <button class="tab-btn" data-tab="anomalies-tab">Anomalies</button>
+                </div>
+            </div>
+            
+            <!-- Contenu des tabs -->
+            <div id="charts-tab" class="tab-content" style="display: block;">
+                <div class="charts-row">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3 class="chart-title">Tendance de Consommation</h3>
+                        </div>
+                        <canvas id="consumption-trend-chart"></canvas>
+                    </div>
+                    
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3 class="chart-title">Types de Bons Utilisés</h3>
+                        </div>
+                        <canvas id="coupon-types-chart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="charts-row">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3 class="chart-title">Activité par Type d'Utilisateur</h3>
+                            <select id="user-type-filter" class="chart-filter">
+                                <option value="admin">Administrateurs</option>
+                                <option value="chauffeur">Chauffeurs</option>
+                                <option value="vehicule">Véhicules</option>
+                                <option value="all">Tous</option>
+                            </select>
+                        </div>
+                        <canvas id="user-activity-chart"></canvas>
+                    </div>
+                    
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3 class="chart-title">Vérification des Anomalies</h3>
+                        </div>
+                        <div id="anomaly-check-list" class="anomaly-list">
+                            <!-- Dynamically populated -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="tables-tab" class="tab-content" style="display: none;">
+                <div class="table-card">
+                    <div class="table-header">
+                        <h3 class="table-title">Top Performances</h3>
+                        <div class="table-filters">
+                            <select id="performer-type" class="filter-select">
+                                <option value="chauffeur">Chauffeurs</option>
+                                <option value="vehicule">Véhicules</option>
+                                <option value="centre">Centres</option>
+                                <option value="admin">Administrateurs</option>
+                            </select>
+                            <select id="performance-metric" class="filter-select">
+                                <option value="count">Nombre de Bons</option>
+                                <option value="amount">Montant Total</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table id="top-performers-table" class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Rang</th>
+                                    <th>Nom</th>
+                                    <th id="center-column">Centre</th>
+                                    <th>Consommation</th>
+                                    <th>% du Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Dynamically populated -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="anomalies-tab" class="tab-content" style="display: none;">
+                <div class="table-card">
+                    <div class="table-header">
+                        <h3 class="table-title">Liste des Anomalies</h3>
+                    </div>
+                    <div class="table-responsive">
+                        <table id="anomalies-table" class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Date</th>
+                                    <th>Type</th>
+                                    <th>Description</th>
+                                    <th>Sévérité</th>
+                                    <th>Entité</th>
+                                    <th>Statut</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Dynamically populated -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Modal pour résoudre une anomalie -->
+    <div id="anomaly-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Résoudre l'Anomalie</h2>
+            <form id="solve-anomaly-form">
+                <input type="hidden" id="anomaly-id">
+                <div class="form-group">
+                    <label for="solution-description">Description de la Solution:</label>
+                    <textarea id="solution-description" required></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">Résoudre</button>
+                    <button type="button" class="btn-secondary close-modal">Annuler</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
+    <script src="../middleware/auth.js"></script>
+    <script src="../middleware/page-protection.js"></script>
+    <script src="Analyse_Bons.js"></script>
+</body>
+</html> 

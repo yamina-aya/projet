@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau de Bord Consommation Directe</title>
+    <link rel="stylesheet" href="Analyse_Directe.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script >  
+        document.addEventListener("DOMContentLoaded", function() {
+            // Get elements
+            const sidebar = document.querySelector('.sidebar');
+            const content = document.querySelector('.main-content');
+            const toggleBtn = document.getElementById('sidebarToggle');
+        
+            sidebar.classList.add('sidebar-initializing');
+            content.classList.add('sidebar-initializing');
+        
+            
+            // Dropdown functionality
+            let dropdowns = document.querySelectorAll(".dropdown");
+            dropdowns.forEach(dropdown => {
+                let dropdownBtn = dropdown.querySelector(".dropdown-btn");
+                dropdownBtn.addEventListener("click", function(e) {
+                    e.preventDefault();
+                    dropdown.classList.toggle("active");
+                });
+            });
+            
+        
+             // Remove the initializing class after a brief delay to restore transitions
+             setTimeout(function() {
+                sidebar.classList.remove('sidebar-initializing');
+                content.classList.remove('sidebar-initializing');
+            },50);
+            
+        
+        
+            // Function to set sidebar state
+            function setSidebarState(isCollapsed) {
+                if (isCollapsed) {
+                    sidebar.classList.add('collapsed');
+                    content.classList.add('sidebar-collapsed');
+                } else {
+                    sidebar.classList.remove('collapsed');
+                    content.classList.remove('sidebar-collapsed');
+                }
+                // Save to localStorage
+                localStorage.setItem('sidebarCollapsed', isCollapsed);
+            }
+            
+            // Check saved state when page loads, default to open if no state is saved
+            const savedState = localStorage.getItem('sidebarCollapsed');
+            if (savedState !== null) {
+                setSidebarState(savedState === 'false');
+            } else {
+                // Default state is collapsed
+                setSidebarState(true);
+            }
+            
+                
+        
+            // Toggle button functionality
+            toggleBtn.addEventListener('click', function() {
+                const currentState = sidebar.classList.contains('collapsed');
+                setSidebarState(!currentState); // Toggle the state
+            });
+        });
+        </script>
+    <link rel="stylesheet" href="Analyse_Bons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <!-- Chart.js pour les graphiques -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="notification-container"></div>
+    
+    <!-- Barre latérale de navigation -->
+    <nav class="sidebar">
+        <div class="sidebar-main">
+            <ul>
+                <li>
+                    <a href="profil.html" ">
+                        <img src="../icon/Profil.png" alt="Profile icon" class="icon">
+                        <span class="link-text">Profil</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="Consommation.html">
+                        <img src="../icon/Consommation.png" alt="Consumption icon" class="icon">
+                        <span class="link-text">Consommation</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="creer-admin.html">
+                        <img src="../icon/cree-admin.png" alt="Admin icon" class="icon">
+                        <span class="link-text">Admin</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="Demand.html">
+                        <img src="../icon/Demande.png" alt="Requests icon" class="icon">
+                        <span class="link-text">Demandes</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="bons.html">
+                        <img src="../icon/Bons.png" alt="Vouchers icon" class="icon">
+                        <span class="link-text">Bons</span>
+                    </a>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-btn">
+                        <img src="../icon/Dashboard.png" alt="Dashboard icon" class="icon">
+                        <span class="link-text">Dashboard</span>
+                        <span class="dropdown-indicator">▼</span>
+                    </a>
+                    <ul class="dropdown-content">
+                       <li>
+                        <a href="Analyse_General.html">General</a>
+                       </li>
+                        <li>
+                        
+                            <a href="Analyse_Bons.html">
+                                <img src="../icon/A-Bons.png" alt="Vouchers analysis icon" class="icon">
+                                <span class="link-text">Bons</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="Analyse_Demandes.html">
+                                <img src="../icon/Demande.png" alt="Requests analysis icon" class="icon">
+                                <span class="link-text">Demandes</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="Analyse_Cartes.html">
+                                <img src="../icon/Carte.png" alt="Cards analysis icon" class="icon">
+                                <span class="link-text">Cartes</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="Analyse_Directe.html">
+                                <img src="../icon/A-Direct.png" alt="Direct analysis icon" class="icon">
+                                <span class="link-text">Direct</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+               
+            </ul>
+        </div>
+        
+        <div class="sidebar-footer">
+            <ul>
+                <li>
+                    <button id="sidebarToggle" class="sidebar-toggle">
+                        <img src="../icon/menus.png" alt="Menu toggle icon" class="icon">
+                        <span class="link-text">Toggle Menu</span>
+                    </button>
+                </li>
+                <li>
+                    <a href="logout.html" class="logout-btn">
+                        <img src="../icon/logout.png" alt="Logout icon" class="icon">
+                        <span class="link-text">Logout</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <!-- Main Content -->
+    <div class="main-content main-content-sidebar-initializing" id="main-content">
+        <div class="dashboard-container">
+            <!-- Dashboard Header -->
+            <header class="dashboard-header">
+                <div class="header-title">
+                    <h1>Tableau de Bord Consommation Directe</h1>
+                    <p class="subtitle">Vue d'ensemble de toutes les consommations directes dans le système</p>
+                </div>
+                <div class="header-actions">
+                    <div class="date-range">
+                        <span class="date-label">Période: </span>
+                        <select id="period-selector" class="date-select">
+                            <option value="today">Aujourd'hui</option>
+                            <option value="week" selected>Cette semaine</option>
+                            <option value="month">Ce mois</option>
+                            <option value="quarter">Ce trimestre</option>
+                        </select>
+                    </div>
+                    <button class="export-button">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        Exporter
+                    </button>
+                </div>
+            </header>
+
+            <!-- Statistics Row -->
+            <section class="statistics-row">
+                <div class="stat-card total-quantity">
+                    <div class="stat-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M7 21h10a2 2 0 0 0 2-2v-6h-5v-5H9v11a2 2 0 0 1-2 2H7z"></path>
+                            <path d="M9 3v3a2 2 0 0 0 2 2h3M14 3h-1"></path>
+                        </svg>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="total-quantity">0 L</div>
+                        <div class="stat-label">Total Consommation (Litres)</div>
+                    </div>
+                </div>
+                <div class="stat-card total-amount">
+                    <div class="stat-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 1v22"></path>
+                            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                        </svg>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="total-amount">0 DA</div>
+                        <div class="stat-label">Total Consommation (Montant)</div>
+                    </div>
+                </div>
+                <div class="stat-card average">
+                    <div class="stat-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M8 9l4-4l4 4"></path>
+                            <path d="M8 15l4 4l4-4"></path>
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                        </svg>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="average-per-vehicle">0 L</div>
+                        <div class="stat-label">Moyenne par Véhicule</div>
+                    </div>
+                </div>
+                <div class="stat-card transactions">
+                    <div class="stat-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="9 11 12 14 22 4"></polyline>
+                            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                        </svg>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="total-transactions">0</div>
+                        <div class="stat-label">Total Transactions</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Main Dashboard Content -->
+            <div class="dashboard-tabs">
+                <div class="tab-buttons">
+                    <button class="tab-button active" data-tab="charts">Graphiques</button>
+                    <button class="tab-button" data-tab="tables">Tableaux</button>
+                </div>
+                
+                <!-- Charts Tab -->
+                <div class="tab-content active" id="charts-tab">
+                    <div class="charts-row">
+                        <div class="chart-card trend-chart-card">
+                            <div class="card-header">
+                                <h2>Tendance de Consommation Directe</h2>
+                                <div class="period-selectors">
+                                    <button class="trend-period-selector active" data-period="semaine">7J</button>
+                                    <button class="trend-period-selector" data-period="mois">30J</button>
+                                    <button class="trend-period-selector" data-period="annee">1A</button>
+                                </div>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="trend-chart"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-card centers-chart-card">
+                            <div class="card-header">
+                                <h2>Consommation par Centre</h2>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="centers-chart"></canvas>
+                            </div>
+                            <div class="centers-legend" id="centers-legend">
+                                <!-- Will be populated dynamically -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="charts-row">
+                        <div class="chart-card comparison-chart-card">
+                            <div class="card-header">
+                                <h2>Comparaison par District</h2>
+                                <div class="period-selectors">
+                                    <button class="comparison-period-selector active" data-period="semaine">7J</button>
+                                    <button class="comparison-period-selector" data-period="mois">30J</button>
+                                    <button class="comparison-period-selector" data-period="annee">1A</button>
+                                </div>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="comparison-chart"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-card anomalies-card">
+                            <div class="card-header">
+                                <h2>Anomalies Détectées</h2>
+                            </div>
+                            <div class="anomalies-list" id="anomalies-list">
+                                <!-- Will be populated dynamically -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Tables Tab -->
+                <div class="tab-content" id="tables-tab">
+                    <div class="tables-row">
+                        <div class="table-card performers-card">
+                            <div class="card-header">
+                                <h2>Top Consommateurs</h2>
+                                <div class="performers-filters">
+                                    <div class="filters-group">
+                                        <span>Type:</span>
+                                        <button class="performer-type-selector active" data-type="chauffeur">Chauffeur</button>
+                                        <button class="performer-type-selector" data-type="vehicule">Véhicule</button>
+                                        <button class="performer-type-selector" data-type="centre">Centre</button>
+                                        <button class="performer-type-selector" data-type="district">District</button>
+                                    </div>
+                                    <div class="filters-group">
+                                        <span>Métrique:</span>
+                                        <button class="performer-metric-selector active" data-metric="quantite">Quantité</button>
+                                        <button class="performer-metric-selector" data-metric="montant">Montant</button>
+                                        <button class="performer-metric-selector" data-metric="frequence">Fréquence</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="performers-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Rang</th>
+                                            <th>Nom</th>
+                                            <th>Centre</th>
+                                            <th id="metric-header">Quantité (L)</th>
+                                            <th>Pourcentage</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="performers-table-body">
+                                        <!-- Will be populated dynamically -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="Analyse_Directe.js"></script>
+</body>
+</html> 

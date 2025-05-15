@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demandes</title>
+    <link rel="stylesheet" href="Analyse_Demandes.css">
+    <!-- <link rel="stylesheet" href="Analyse_Bons.css"> -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
+    
+    <script >  
+        document.addEventListener("DOMContentLoaded", function() {
+            // Get elements
+            const sidebar = document.querySelector('.sidebar');
+            const content = document.querySelector('.main-content');
+            const toggleBtn = document.getElementById('sidebarToggle');
+        
+            sidebar.classList.add('sidebar-initializing');
+            content.classList.add('sidebar-initializing');
+        
+            
+            // Dropdown functionality
+            let dropdowns = document.querySelectorAll(".dropdown");
+            dropdowns.forEach(dropdown => {
+                let dropdownBtn = dropdown.querySelector(".dropdown-btn");
+                dropdownBtn.addEventListener("click", function(e) {
+                    e.preventDefault();
+                    dropdown.classList.toggle("active");
+                });
+            });
+            
+        
+             // Remove the initializing class after a brief delay to restore transitions
+             setTimeout(function() {
+                sidebar.classList.remove('sidebar-initializing');
+                content.classList.remove('sidebar-initializing');
+            },50);
+            
+        
+        
+            // Function to set sidebar state
+            function setSidebarState(isCollapsed) {
+                if (isCollapsed) {
+                    sidebar.classList.add('collapsed');
+                    content.classList.add('sidebar-collapsed');
+                } else {
+                    sidebar.classList.remove('collapsed');
+                    content.classList.remove('sidebar-collapsed');
+                }
+                // Save to localStorage
+                localStorage.setItem('sidebarCollapsed', isCollapsed);
+            }
+            
+            // Check saved state when page loads, default to open if no state is saved
+            const savedState = localStorage.getItem('sidebarCollapsed');
+            if (savedState !== null) {
+                setSidebarState(savedState === 'false');
+            } else {
+                // Default state is collapsed
+                setSidebarState(true);
+            }
+            
+                
+        
+            // Toggle button functionality
+            toggleBtn.addEventListener('click', function() {
+                const currentState = sidebar.classList.contains('collapsed');
+                setSidebarState(!currentState); // Toggle the state
+            });
+        });
+
+
+        // Add this to your existing JavaScript
+document.addEventListener("DOMContentLoaded", function() {
+    const sidebar = document.querySelector('.sidebar');
+    const dropdowns = document.querySelectorAll(".dropdown");
+
+    dropdowns.forEach(dropdown => {
+        const dropdownBtn = dropdown.querySelector(".dropdown-btn");
+        
+        dropdownBtn.addEventListener("click", function(e) {
+            e.preventDefault();
+            
+            // If sidebar is collapsed, handle hover instead of click
+            if (sidebar.classList.contains('collapsed')) {
+                return;
+            }
+            
+            // Close other dropdowns
+            dropdowns.forEach(d => {
+                if (d !== dropdown && d.classList.contains('active')) {
+                    d.classList.remove('active');
+                }
+            });
+            
+            // Toggle current dropdown
+            dropdown.classList.toggle("active");
+        });
+        
+        // Add hover handling for collapsed state
+        if (sidebar.classList.contains('collapsed')) {
+            dropdown.addEventListener('mouseenter', () => {
+                dropdown.classList.add('active');
+            });
+            
+            dropdown.addEventListener('mouseleave', () => {
+                dropdown.classList.remove('active');
+            });
+        }
+    });
+});
+        </script>
+     <!-- Chart.js pour les graphiques -->
+   
+</head>
+<body>
+    <div class="notification-container"></div>
+    
+    <!-- Barre latérale de navigation -->
+    <nav class="sidebar">
+        <div class="sidebar-main">
+            <ul>
+                <li>
+                    <a href="../profile/profil.html" ">
+                        <img src="../icon/Profil.png" alt="Profile icon" class="icon">
+                        <span class="link-text">Profil</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="../Consommation/Consommation.html">
+                        <img src="../icon/Consommation.png" alt="Consumption icon" class="icon">
+                        <span class="link-text">Consommation</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="../cree-admin/creer-admin.html">
+                        <img src="../icon/cree-admin.png" alt="Admin icon" class="icon">
+                        <span class="link-text">Admin</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="../Demande/Demand.html">
+                        <img src="../icon/Demande.png" alt="Requests icon" class="icon">
+                        <span class="link-text">Demandes</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="../Bons/bons.html">
+                        <img src="../icon/Bons.png" alt="Vouchers icon" class="icon">
+                        <span class="link-text">Bons</span>
+                    </a>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-btn">
+                        <img src="../icon/Dashboard.png" alt="Dashboard icon" class="icon">
+                        <span class="link-text">Dashboard</span>
+                        <span class="dropdown-indicator">▼</span>
+                    </a>
+                    <ul class="dropdown-content">
+                       <li>
+                        <a href="Analyse_General.html">General</a>
+                       </li>
+                        <li>
+                        
+                            <a href="Analyse_Bons.html">
+                                <img src="../icon/A-Bons.png" alt="Vouchers analysis icon" class="icon">
+                                <span class="link-text">Bons</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="Analyse_Demandes.html">
+                                <img src="../icon/Demande.png" alt="Requests analysis icon" class="icon">
+                                <span class="link-text">Demandes</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="Analyse_Cartes.html">
+                                <img src="../icon/Carte.png" alt="Cards analysis icon" class="icon">
+                                <span class="link-text">Cartes</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="Analyse_Directe.html">
+                                <img src="../icon/A-Direct.png" alt="Direct analysis icon" class="icon">
+                                <span class="link-text">Direct</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+              
+            </ul>
+        </div>
+        
+        <div class="sidebar-footer">
+            <ul>
+                <li>
+                    <button id="sidebarToggle" class="sidebar-toggle">
+                        <img src="../icon/menus.png" alt="Menu toggle icon" class="icon">
+                        <span class="link-text">Toggle Menu</span>
+                    </button>
+                </li>
+                <li>
+                    <a href="logout.html" class="logout-btn">
+                        <img src="../icon/logout.png" alt="Logout icon" class="icon">
+                        <span class="link-text">Logout</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+        <!-- Main Content -->
+    <div class="main-content main-content-sidebar-initializing" id="main-content">
+        <div class="dashboard-container">
+            <!-- Dashboard Header -->
+            <header class="dashboard-header">
+                <div class="header-title">
+                    <h1>Analyse des Demandes de Carburant</h1>
+                    <p class="subtitle">Vue d'ensemble des demandes pour le mois en cours</p>
+                </div>
+                <div class="header-actions">
+                    <div class="date-filter">
+                        <select id="period-filter" class="filter-select">
+                            <option value="semaine">Semaine</option>
+                            <option value="mois">Mois</option>
+                            <option value="annee">Année</option>
+                            <option value="personnalise">Période Personnalisée</option>
+                        </select>
+                        <div id="custom-date-range" style="display: none;">
+                            <input type="date" id="start-date" class="date-input">
+                            <input type="date" id="end-date" class="date-input">
+                            <button id="apply-date-btn" class="apply-btn">Appliquer</button>
+                        </div>
+                        <select id="entity-filter" class="filter-select">
+                            <option value="all">Tous les Centres</option>
+                            <option value="branche">Ma Branche</option>
+                            <option value="district">Mon District</option>
+                            <option value="centre">Mon Centre</option>
+                        </select>
+                        <div id="center-select-container" style="display: none;">
+                            <select id="center-select" class="filter-select">
+                                <option value="">Chargement des centres...</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="export-button">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        Exporter
+                    </button>
+                </div>
+            </header>
+
+            <!-- Statistics Row -->
+            <section class="statistics-row">
+                <div class="stat-card total">
+                    <div class="stat-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                        </svg>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="total-demands">0</div>
+                        <div class="stat-label">Total des demandes</div>
+                    </div>
+                </div>
+                <div class="stat-card active">
+                    <div class="stat-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="active-demands">0</div>
+                        <div class="stat-label">Demandes actives</div>
+                    </div>
+                </div>
+                <div class="stat-card expired">
+                    <div class="stat-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                            <line x1="9" y1="16" x2="15" y2="16"></line>
+                        </svg>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="expired-demands">0</div>
+                        <div class="stat-label">Demandes expirées</div>
+                    </div>
+                </div>
+                <div class="stat-card used">
+                    <div class="stat-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        </svg>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="used-demands">0</div>
+                        <div class="stat-label">Demandes utilisées</div>
+                    </div>
+                </div>
+            </section>
+
+x               <!-- Tabs pour basculer entre graphiques et tableaux -->
+            <div class="tabs-container">
+                <div class="tabs">
+                    <button class="tab-button active" data-tab="charts-tab">Graphiques</button>
+                    <button class="tab-button" data-tab="tables-tab">Tableaux</button>
+                    <button class="tab-button" data-tab="anomalies-tab">Anomalies</button>
+                </div>
+            </div>
+            
+            <!-- Contenu des tabs -->
+            <div id="charts-tab" class="tab-content" style="display: block;">
+                <div class="charts-row">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3 class="chart-title">Tendance des Demandes</h3>
+                            <div class="period-selectors">
+                                <button class="trend-period-selector active" data-period="semaine">7J</button>
+                                <button class="trend-period-selector" data-period="mois">30J</button>
+                                <button class="trend-period-selector" data-period="annee">1A</button>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="trend-chart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3 class="chart-title">Statut des Demandes</h3>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="status-chart"></canvas>
+                        </div>
+                        <div class="status-legend" id="status-legend">
+                            <!-- Will be populated dynamically -->
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="charts-row">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3 class="chart-title">Activité par Type d'Utilisateur</h3>
+                            <select id="user-type-filter" class="chart-filter">
+                                <option value="admin">Administrateurs</option>
+                                <option value="chauffeur">Chauffeurs</option>
+                                <option value="vehicule">Véhicules</option>
+                                <option value="all">Tous</option>
+                            </select>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="activity-chart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3 class="chart-title">Vérification des Anomalies</h3>
+                        </div>
+                        <div id="anomaly-check-list" class="anomaly-list">
+                            <!-- Dynamically populated -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tables Tab -->
+            <div id="tables-tab" class="tab-content" style="display: none;">
+                <div class="table-card">
+                    <div class="table-header">
+                        <h3 class="table-title">Top Performances</h3>
+                        <div class="table-filters">
+                            <select id="performer-type" class="filter-select">
+                                <option value="chauffeur">Chauffeurs</option>
+                                <option value="vehicule">Véhicules</option>
+                                <option value="centre">Centres</option>
+                                <option value="admin">Administrateurs</option>
+                            </select>
+                            <select id="performance-metric" class="filter-select">
+                                <option value="count">Nombre de Demandes</option>
+                                <option value="amount">Montant Total</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table id="top-performers-table" class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Rang</th>
+                                    <th>Nom</th>
+                                    <th id="center-column">Centre</th>
+                                    <th>Demandes</th>
+                                    <th>% du Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Dynamically populated -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="anomalies-tab" class="tab-content" style="display: none;">
+                <div class="table-card">
+                    <div class="table-header">
+                        <h3 class="table-title">Liste des Anomalies</h3>
+                        <div class="table-filters">
+                            <select id="anomaly-severity-filter" class="filter-select">
+                                <option value="all">Toutes les sévérités</option>
+                                <option value="high">Élevée</option>
+                                <option value="medium">Moyenne</option>
+                                <option value="low">Faible</option>
+                            </select>
+                            <select id="anomaly-status-filter" class="filter-select">
+                                <option value="all">Tous les statuts</option>
+                                <option value="pending">En attente</option>
+                                <option value="resolved">Résolu</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table id="anomalies-table" class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Date</th>
+                                    <th>Type</th>
+                                    <th>Description</th>
+                                    <th>Sévérité</th>
+                                    <th>Entité</th>
+                                    <th>Statut</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Dynamically populated -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal pour résoudre une anomalie -->
+    <div id="anomaly-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Résoudre l'Anomalie</h2>
+            <form id="solve-anomaly-form">
+                <input type="hidden" id="anomaly-id">
+                <div class="form-group">
+                    <label for="solution-description">Description de la Solution:</label>
+                    <textarea id="solution-description" required></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">Résoudre</button>
+                    <button type="button" class="btn-secondary close-modal">Annuler</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
+    <script src="../middleware/auth.js"></script>
+    <script src="../middleware/page-protection.js"></script>
+    <script src="Analyse_Demandes.js"></script>
+</body>
+</html>
+

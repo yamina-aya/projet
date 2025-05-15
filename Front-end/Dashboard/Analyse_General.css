@@ -1,0 +1,576 @@
+/* Variables globales */
+:root {
+    --primary-color: #4a90e2;
+    --secondary-color: #f7fafc;
+    --text-color: #2d3748;
+    --border-color: #e2e8f0;
+    --error-color: #e53e3e;
+    --success-color: #48bb78;
+    --sidebar-width: 250px;
+    --sidebar-collapsed-width: 70px;
+    --transition-speed: 0.3s;
+}
+
+/* Styles de base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+    color: var(--text-color);
+}
+
+.sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: var(--sidebar-width);
+    height: 100%;
+    background-color: white;
+    padding: 20px 0;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    transition: width var(--transition-speed);
+    overflow-x: hidden;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.sidebar.collapsed {
+    width: var(--sidebar-collapsed-width);
+}
+
+.sidebar-main {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    max-height: 85vh; /* Ensure all content is visible */
+}
+
+.sidebar-footer {
+    margin-top: auto;
+    border-top: 1px solid #eee;
+    padding-top: 10px;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar > ul > li, 
+.sidebar-main > ul > li,
+.sidebar-footer > ul > li {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+}
+
+.sidebar a {
+    display: flex;
+    align-items: center;
+    padding: 12px 10px 12px 20px;
+    color: var(--text-color);
+    text-decoration: none;
+    border-radius: 6px;
+    margin-bottom: 5px;
+    transition: background-color var(--transition-speed);
+    white-space: nowrap;
+    width: calc(100% - 30px);
+}
+
+.sidebar ul li .link-text {
+    margin-left: 10px;
+    transition: opacity var(--transition-speed);
+}
+
+.sidebar.collapsed .link-text {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.sidebar a:hover,
+.sidebar a.active,
+.sidebar button:hover {
+    background-color: var(--secondary-color);
+    color: var(--primary-color);
+}
+
+/* Dropdown */
+.dropdown-btn {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+}
+
+.dropdown-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height var(--transition-speed);
+    width: 100%;
+}
+
+.dropdown.active .dropdown-content {
+    max-height: 300px; /* Adjust based on your needs */
+}
+
+.dropdown-content li {
+    background: #ffffff;
+    padding: 0;
+}
+
+.dropdown-content a {
+    padding-left: 55px; /* Indent dropdown items */
+}
+
+.sidebar.collapsed .dropdown-content a {
+    padding-left: 20px; /* Reset when collapsed */
+}
+
+.dropdown-content li:hover {
+    background: #e0eaf8;
+}
+
+/* Icons */
+.icon {
+    height: 25px;
+    width: 25px;
+    min-width: 25px; /* Ensures the icon doesn't shrink */
+}
+
+/* Toggle button */
+.sidebar-toggle {
+    display: flex;
+    align-items: center;
+    padding: 12px 10px 12px 20px;
+    margin-bottom: 5px;
+    width: calc(100% - 30px);
+    background: none;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    color: var(--text-color);
+    text-align: left;
+}
+
+/* Dropdown arrow indicator */
+.dropdown-indicator {
+    margin-left: auto;
+    transition: transform 0.3s;
+}
+
+.dropdown.active .dropdown-indicator {
+    transform: rotate(180deg);
+}
+
+/* Hide dropdown indicator when collapsed */
+.sidebar.collapsed .dropdown-indicator {
+    opacity: 0;
+}
+
+/* Logout button */
+.logout-btn {
+    color: #ff3b30;
+}
+
+.sidebar-initializing {
+    transition: none !important;
+}
+  
+.main-content.sidebar-initializing {
+    transition: none !important;
+}
+
+/* Contenu principal */
+.main-content {
+    margin-left: var(--sidebar-width);
+    padding: 15px;
+    transition: margin-left var(--transition-speed);
+    overflow-x: hidden;
+}
+
+/* Add this new class */
+.main-content.sidebar-collapsed {
+    margin-left: var(--sidebar-collapsed-width);
+}
+
+/* Styles pour le dashboard */
+.dashboard-container {
+    padding: 5px;
+    max-width: 100%;
+}
+
+.dashboard-container h1 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+/* Remove extra spacing */
+.dashboard-container br {
+    display: none;
+}
+
+/* Styles pour les cartes de résumé - MADE SMALLER */
+.summary-cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.summary-card {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    min-width: 0; /* Prevents overflow */
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.card-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #718096;
+}
+
+.card-icon {
+    width: 32px;
+    height: 32px;
+    background-color: #EBF5FF;
+    color: var(--primary-color);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.card-value {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 3px;
+}
+
+.card-change {
+    display: flex;
+    align-items: center;
+    font-size: 12px;
+}
+
+.change-up {
+    color: var(--success-color);
+}
+
+.change-down {
+    color: var(--error-color);
+}
+
+/* Styles pour les tabs */
+.tabs-container {
+    margin-bottom: 15px;
+}
+
+.tabs {
+    display: flex;
+    gap: 10px;
+    background-color: white;
+    padding: 8px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.tab {
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.tab.active {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+/* NEW CHART LAYOUT - Organized in a grid pattern */
+.top-charts {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.bottom-charts {
+    margin-bottom: 15px;
+    width: 100%;
+}
+
+.bottom-charts .chart-card {
+    width: 100%;
+}
+
+.chart-card, .table-card {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    padding: 15px;
+}
+
+.chart-header, .table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.chart-title, .table-title {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+canvas {
+    display: none;
+}
+
+#fuelTypeChart {
+    max-height: 220px;
+}
+
+#consumptionTimeChart, #stackedBarChart {
+    max-height: 220px;
+}
+
+/* Styles pour les filtres */
+.filter-container {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.filter-select {
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    background-color: white;
+}
+
+/* Styles pour les tables */
+.tables-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.data-table-container {
+    max-height: 300px;
+    overflow-y: auto;
+    margin-top: 15px;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    font-size: 0.9em;
+}
+
+.data-table th {
+    position: sticky;
+    top: 0;
+    background: #f8fafc;
+    padding: 12px;
+    text-align: left;
+    color: #4a5568;
+    font-weight: 600;
+    border-bottom: 2px solid #e2e8f0;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.data-table th:hover {
+    background-color: #edf2f7;
+}
+
+.data-table td {
+    padding: 12px;
+    border-bottom: 1px solid #e2e8f0;
+    color: #2d3748;
+}
+
+.data-table tbody tr:hover {
+    background-color: #f7fafc;
+}
+
+.data-table tbody tr:nth-child(even) {
+    background-color: #fafafa;
+}
+
+/* Value formatting */
+.data-table td:nth-child(2),
+.data-table td:nth-child(3) {
+    text-align: right;
+}
+
+/* Sort indicators */
+.data-table th.sort-asc::after {
+    content: "▲";
+    margin-left: 5px;
+    font-size: 0.8em;
+}
+
+.data-table th.sort-desc::after {
+    content: "▼";
+    margin-left: 5px;
+    font-size: 0.8em;
+}
+
+/* Pour les écrans plus petits */
+@media (max-width: 1024px) {
+    .summary-cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .top-charts {
+        grid-template-columns: 1fr;
+    }
+    
+    .tables-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .tables-container {
+        overflow-x: auto;
+    }
+    
+    .data-table {
+        min-width: 600px;
+    }
+}
+
+@media (max-width: 768px) {
+    .summary-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .data-table-container {
+        max-height: none;
+        overflow-x: auto;
+    }
+
+    .data-table {
+        min-width: 500px;
+    }
+
+    .chart-card {
+        min-height: auto;
+    }
+}
+
+/* Style pour masquer les onglets inactifs */
+.tab-content {
+    display: none;
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* View toggle buttons */
+.view-toggle {
+    display: flex;
+    gap: 5px;
+}
+
+.toggle-btn {
+    background: none;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    padding: 5px 10px;
+    cursor: pointer;
+    color: #718096;
+    transition: all 0.2s;
+}
+
+.toggle-btn:hover {
+    background: #f7fafc;
+}
+
+.toggle-btn.active {
+    background: #4a90e2;
+    color: white;
+    border-color: #4a90e2;
+}
+
+/* View content containers */
+.view-content {
+    display: none;
+    width: 100%;
+    height: 100%;
+}
+
+.view-content.active {
+    display: block;
+}
+
+.chart-view {
+    height: 300px;
+}
+
+.table-view {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.toggle-btn {
+    background: none;
+    border: 1px solid #ddd;
+    padding: 5px 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.toggle-btn:hover {
+    background-color: #f5f5f5;
+}
+
+.toggle-btn.active {
+    background-color: #4e73df;
+    color: white;
+    border-color: #4e73df;
+}
+
+/* Chart container adjustments */
+.chart-card {
+    position: relative;
+}
+
+.chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e2e8f0;
+}
