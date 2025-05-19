@@ -1,0 +1,539 @@
+CREATE TABLE branches (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nom VARCHAR(255) NOT NULL,
+    localisation VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE districts (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nom VARCHAR(255) NOT NULL,
+    localisation VARCHAR(255) NOT NULL,
+    branche_id INT,
+    FOREIGN KEY (branche_id) REFERENCES branches(id) ON DELETE SET NULL
+);
+
+CREATE TABLE centers (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nom VARCHAR(255) NOT NULL,
+    localisation VARCHAR(255) NOT NULL,
+    district_id INT,
+    FOREIGN KEY (district_id) REFERENCES districts(id) ON DELETE SET NULL
+);
+
+CREATE TABLE admin (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nom VARCHAR(255) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    mot_de_passe VARCHAR(255) NOT NULL,
+    role ENUM('Administrateur Centre','Administrateur Branche','Administrateur District') NOT NULL,
+    permissions SET('creer_admin','consultation','envoyer_demande','attribuer_bons','remplir_formulaire_consommation'),
+    date_creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    date_mise_a_jour TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    photo_url VARCHAR(255),
+    centre_id INT,
+    district_id INT,
+    branche_id INT,
+    FOREIGN KEY (centre_id) REFERENCES centers(id) ON DELETE SET NULL,
+    FOREIGN KEY (district_id) REFERENCES districts(id) ON DELETE SET NULL,
+    FOREIGN KEY (branche_id) REFERENCES branches(id) ON DELETE SET NULL
+);
+
+CREATE TABLE chauffeurs (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nom_complet VARCHAR(255) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    telephone VARCHAR(50) NOT NULL,
+    centre_id INT,
+    FOREIGN KEY (centre_id) REFERENCES centers(id) ON DELETE SET NULL
+);
+
+CREATE TABLE vehicules (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nom VARCHAR(255) NOT NULL,
+    modele VARCHAR(255) NOT NULL,
+    matricule VARCHAR(50) UNIQUE NOT NULL,
+    chauffeur_assigne_id INT,
+    centre_id INT,
+    FOREIGN KEY (chauffeur_assigne_id) REFERENCES chauffeurs(id) ON DELETE SET NULL,
+    FOREIGN KEY (centre_id) REFERENCES centers(id) ON DELETE SET NULL
+);
+
+CREATE TABLE demandes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    centre_actuel_id INT,
+    centre_recepteur_id INT,
+    admin_id INT,
+    chauffeur_id INT,
+    vehicule_id INT,
+    date_creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    date_consommation DATE,
+    quantite INT NOT NULL,
+    statut ENUM('valide','utilise','expire') NOT NULL,
+    FOREIGN KEY (centre_actuel_id) REFERENCES centers(id) ON DELETE CASCADE,
+    FOREIGN KEY (centre_recepteur_id) REFERENCES centers(id) ON DELETE CASCADE,
+    FOREIGN KEY (admin_id) REFERENCES admin(id) ON DELETE SET NULL,
+    FOREIGN KEY (chauffeur_id) REFERENCES chauffeurs(id) ON DELETE SET NULL,
+    FOREIGN KEY (vehicule_id) REFERENCES vehicules(id) ON DELETE SET NULL
+);
+
+
+
+CREATE TABLE consommation (
+    id INT PRIMARY KEY IDENTITY(1,1),  -- Auto-incrément
+    id_admin INT NOT NULL,
+    id_centre INT NOT NULL,
+    date_consommation DATETIME NOT NULL DEFAULT GETDATE(),
+    type_consommation ENUM('direct', 'demande', 'bon') NOT NULL,
+    quantite DECIMAL(10,2) NULL,
+    FOREIGN KEY (id_admin) REFERENCES admins(id),
+    FOREIGN KEY (id_centre) REFERENCES centres(id)
+);
+
+
+ALTER TABLE consommation 
+
+    ADD COLUMN id_demande INT,
+    ADD COLUMN id_bon INT,
+    ADD FOREIGN KEY (id_demande) REFERENCES demandes(id),
+    ADD FOREIGN KEY (id_bon) REFERENCES bons(id_bon);
+
+
+
+
+
+
+
+CREATE TABLE bons (
+  id_bon INT AUTO_INCREMENT PRIMARY KEY,
+  type_bon ENUM('1000 DA', '1200 DA', '2000 DA') NOT NULL,
+  statut_consommation ENUM('consommé', 'non consommé') NOT NULL,
+  statut_disponibilite ENUM('disponible', 'attribué', 'restitué') NOT NULL
+);
+
+CREATE TABLE attribution (
+  id_attribution INT AUTO_INCREMENT PRIMARY KEY,
+  id_admin INT NOT NULL,
+  id_chauffeur INT NOT NULL,
+  id_centre INT NOT NULL,
+  date_attribution DATE  NOT NULL,
+
+  CONSTRAINT fk_admin FOREIGN KEY (id_admin) REFERENCES admin(id),
+  CONSTRAINT fk_chauffeur FOREIGN KEY (id_chauffeur) REFERENCES chauffeurs(id),
+  CONSTRAINT fk_centre FOREIGN KEY (id_centre) REFERENCES centers(id)
+);
+CREATE TABLE attribution_detail (
+  id_attribution INT NOT NULL,
+  id_bon INT NOT NULL,
+  PRIMARY KEY (id_attribution, id_bon),
+  CONSTRAINT fk_attribution FOREIGN KEY (id_attribution) REFERENCES attribution(id_attribution),
+  CONSTRAINT fk_bon FOREIGN KEY (id_bon) REFERENCES bons(id_bon)
+);
+
+CREATE TABLE restitution (
+  id_restitution INT AUTO_INCREMENT PRIMARY KEY,
+  id_admin INT NOT NULL,        -- ou id_utilisateur si ce n'est pas toujours un admin
+  id_chauffeur INT NOT NULL,     -- si le chauffeur est concerné par la restitution
+  id_centre INT NOT NULL,
+  date_restitution DATE  NOT NULL,
+  
+  CONSTRAINT fk_admin_restitution FOREIGN KEY (id_admin) REFERENCES admin(id),
+  CONSTRAINT fk_chauffeur_restitution FOREIGN KEY (id_chauffeur) REFERENCES chauffeurs(id),
+  CONSTRAINT fk_centre_restitution FOREIGN KEY (id_centre) REFERENCES centers(id)
+);
+CREATE TABLE restitution_detail (
+  id_restitution INT NOT NULL,
+  id_bon INT NOT NULL,
+  PRIMARY KEY (id_restitution, id_bon),
+  CONSTRAINT fk_restitution FOREIGN KEY (id_restitution) REFERENCES restitution(id_restitution),
+  CONSTRAINT fk_bon_restitution FOREIGN KEY (id_bon) REFERENCES bons(id_bon)
+);
+
+
+
+-- Anomalies détectées pour les bons
+CREATE TABLE anomalies_bons (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    date_detection TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    type_anomalie ENUM('consommation_excessive', 'delai_utilisation', 'retour_tardif') NOT NULL,
+    description TEXT NOT NULL,
+    severite ENUM('faible', 'moyenne', 'elevee') NOT NULL,
+    chauffeur_id INT,
+    admin_id INT,
+    centre_id INT,
+    FOREIGN KEY (chauffeur_id) REFERENCES chauffeurs(id) ON DELETE SET NULL,
+    FOREIGN KEY (admin_id) REFERENCES admin(id) ON DELETE SET NULL,
+    FOREIGN KEY (centre_id) REFERENCES centers(id) ON DELETE SET NULL
+);
+
+
+-- Table pour les résolutions d'anomalies
+CREATE TABLE anomalies_resolutions (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    anomalie_id INT NOT NULL,
+    admin_id INT NOT NULL,
+    date_resolution TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    description TEXT,
+    FOREIGN KEY (anomalie_id) REFERENCES anomalies_bons(id) ON DELETE CASCADE,
+    FOREIGN KEY (admin_id) REFERENCES admin(id) ON DELETE CASCADE
+);
+
+
+
+-
+
+-- Anomalies détectées pour les demandes
+CREATE TABLE anomalies_demandes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    date_detection TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    type_anomalie ENUM('demandes_excessives', 'non_utilisation') NOT NULL,
+    description TEXT NOT NULL,
+    severite ENUM('faible', 'moyenne', 'elevee') NOT NULL,
+    admin_id INT,
+    centre_id INT,
+    FOREIGN KEY (admin_id) REFERENCES admin(id) ON DELETE SET NULL,
+    FOREIGN KEY (centre_id) REFERENCES centers(id) ON DELETE SET NULL
+);
+
+
+
+
+
+-- Structure pour le tableau de bord de consommation directe
+CREATE TABLE tableau_bord_consommation_directe (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    date_calcul TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    periode ENUM('jour', 'semaine', 'mois', 'annee') NOT NULL, -- 'jour', 'semaine', 'mois', 'annee'
+    total_quantite DECIMAL(10,2) NOT NULL,
+    total_montant DECIMAL(10,2) NOT NULL,
+    nombre_transactions INT NOT NULL,
+    moyenne_par_vehicule DECIMAL(10,2) NOT NULL,
+    centre_id INT,
+    district_id INT,
+    branche_id INT,
+    FOREIGN KEY (centre_id) REFERENCES centers(id) ON DELETE CASCADE,
+    FOREIGN KEY (district_id) REFERENCES districts(id) ON DELETE CASCADE,
+    FOREIGN KEY (branche_id) REFERENCES branches(id) ON DELETE CASCADE
+);
+
+-- Structure pour consommation directe (table principale)
+
+-- Anomalies détectées pour consommation directe
+CREATE TABLE anomalies_consommation_directe (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    date_detection TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    type_anomalie ENUM('consommation_excessive', 'frequence_elevee', 'variation_soudaine', 'station_inhabituelle') NOT NULL,
+    description TEXT NOT NULL,
+    severite ENUM('faible', 'moyenne', 'elevee') NOT NULL,
+    chauffeur_id INT,
+    vehicule_id INT,
+    centre_id INT,
+    FOREIGN KEY (chauffeur_id) REFERENCES chauffeurs(id) ON DELETE SET NULL,
+    FOREIGN KEY (vehicule_id) REFERENCES vehicules(id) ON DELETE SET NULL,
+    FOREIGN KEY (centre_id) REFERENCES centers(id) ON DELETE SET NULL
+);
+
+
+
+
+
+
+
+
+-- Structure pour le tableau de bord des cartes
+CREATE TABLE cartes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    numero_carte VARCHAR(50) UNIQUE NOT NULL,
+    statut ENUM('active', 'inactive', 'bloquee') NOT NULL DEFAULT 'active',
+    date_creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    chauffeur_id INT,
+    centre_id INT,
+    FOREIGN KEY (chauffeur_id) REFERENCES chauffeurs(id) ON DELETE SET NULL,
+    FOREIGN KEY (centre_id) REFERENCES centers(id) ON DELETE SET NULL
+);
+
+
+
+                CREATE TABLE carte_transaction (
+    code_transaction INT PRIMARY KEY AUTO_INCREMENT,
+    type_transaction ENUM('debit', 'credit') NOT NULL,    
+    date_transaction DATETIME NOT NULL,                   
+
+   
+    id_chauffeur INT,                                      -- Clé étrangère vers le chauffeur
+    id_vehicule INT,                                       -- Clé étrangère vers le véhicule
+    id_centre INT,                                         -- Clé étrangère vers le centre
+
+    numero_serie VARCHAR(100) unique NOT NULL,                    -- Numéro de série de la carte
+    montant DECIMAL(10,2) NOT NULL,                        -- Montant en DZD
+                                -- Quantité consommée en litres (si disponible)
+    produit VARCHAR(100),                                  -- Type de produit : Gasoil, SP95, etc.
+
+    FOREIGN KEY (id_chauffeur) REFERENCES chauffeurs(id),
+    FOREIGN KEY (id_vehicule) REFERENCES vehicules(id),
+    FOREIGN KEY (id_centre) REFERENCES centers(id)
+);
+
+
+-- Tendances des cartes pour les graphiques
+
+-- Anomalies détectées pour les cartes
+CREATE TABLE anomalies_cartes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    date_detection TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    type_anomalie ENUM('utilisation_excessive', 'frequence_inhabituelle', 'plage_horaire_inhabituelle', 'localisation_suspecte') NOT NULL,
+    description TEXT NOT NULL,
+    severite ENUM('faible', 'moyenne', 'elevee') NOT NULL,
+    carte_id INT,
+    chauffeur_id INT,
+    FOREIGN KEY (carte_id) REFERENCES cartes(id) ON DELETE SET NULL,
+    FOREIGN KEY (chauffeur_id) REFERENCES chauffeurs(id) ON DELETE SET NULL
+);
+
+-- Structure pour le tableau de bord général
+CREATE TABLE tableau_bord_general (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    date_calcul TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+     periode ENUM('jour', 'semaine', 'mois', 'annee') NOT NULL, -- 'jour', 'semaine', 'mois', 'annee'
+    total_consommation_bons DECIMAL(10,2) NOT NULL,
+    total_consommation_demandes DECIMAL(10,2) NOT NULL,
+    total_consommation_directe DECIMAL(10,2) NOT NULL,
+    total_consommation_cartes DECIMAL(10,2) NOT NULL,
+    total_general DECIMAL(10,2) NOT NULL,
+    variation_mensuelle DECIMAL(5,2) NOT NULL, -- pourcentage
+    nombre_vehicules_actifs INT NOT NULL,
+    nombre_chauffeurs_actifs INT NOT NULL,
+    centre_id INT,
+    district_id INT,
+    branche_id INT,
+    FOREIGN KEY (centre_id) REFERENCES centers(id) ON DELETE CASCADE,
+    FOREIGN KEY (district_id) REFERENCES districts(id) ON DELETE CASCADE,
+    FOREIGN KEY (branche_id) REFERENCES branches(id) ON DELETE CASCADE
+);
+
+
+
+-- Anomalies détectées générales
+CREATE TABLE anomalies_generales (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    date_detection TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+ 
+    type_consommation ENUM('bon', 'demande', 'direct', 'carte', 'tous') NOT NULL,
+    description TEXT NOT NULL,
+    severite ENUM('faible', 'moyenne', 'elevee') NOT NULL,
+    centre_id INT,
+    district_id INT,
+    branche_id INT,
+
+    FOREIGN KEY (centre_id) REFERENCES centers(id) ON DELETE CASCADE,
+    FOREIGN KEY (district_id) REFERENCES districts(id) ON DELETE CASCADE,
+    FOREIGN KEY (branche_id) REFERENCES branches(id) ON DELETE CASCADE
+);
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+INSERT INTO bons (type_bon, statut_consommation, statut_disponibilite) VALUES
+('1000 DA', 'non consommé', 'disponible'),
+('1200 DA', 'non consommé', 'disponible'),
+('2000 DA', 'non consommé', 'disponible'),
+('1000 DA', 'non consommé', 'disponible'),
+('1200 DA', 'non consommé', 'disponible'),
+('2000 DA', 'non consommé', 'disponible'),
+('1000 DA', 'non consommé', 'disponible'),
+('1200 DA', 'non consommé', 'disponible'),
+('2000 DA', 'non consommé', 'disponible'),
+('1000 DA', 'non consommé', 'disponible');
+
+
+INSERT INTO branches (nom, localisation) VALUES 
+('Branche Commerciale', 'Cheraga'),
+('Branche Carburant', 'Dar El Bida'),
+('Branche GPL', 'Mohamadia');
+
+INSERT INTO districts (nom, localisation, branche_id) VALUES 
+('District Nord', 'Alger', 1), ('District Ouest', 'Oran', 1), ('District Est', 'Constantine', 1), ('District Sud', 'Annaba', 1),
+('District Nord', 'Alger', 2), ('District Ouest', 'Oran', 2), ('District Est', 'Constantine', 2), ('District Sud', 'Annaba', 2),
+('District Nord', 'Alger', 3), ('District Ouest', 'Oran', 3), ('District Est', 'Constantine', 3), ('District Sud', 'Annaba', 3);
+
+-- Insert Centers (18 centers)
+INSERT INTO centers (id, nom, district_id) VALUES 
+(1, 'Center 1', 1), (2, 'Center 2', 1), (3, 'Center 3', 1),
+(4, 'Center 4', 1), (5, 'Center 5', 1), (6, 'Center 6', 1),
+(7, 'Center 7', 2), (8, 'Center 8', 2), (9, 'Center 9', 2),
+(10, 'Center 10', 2), (11, 'Center 11', 2), (12, 'Center 12', 2),
+(13, 'Center 13', 3), (14, 'Center 14', 3), (15, 'Center 15', 3),
+(16, 'Center 16', 3), (17, 'Center 17', 3), (18, 'Center 18', 3),
+(19, 'Center 19', 4), (20, 'Center 20', 4), (21, 'Center 21', 4),
+(22, 'Center 22', 4), (23, 'Center 23', 4), (24, 'Center 24', 4);
+
+
+
+
+
+INSERT INTO centers (id, nom, localisation, district_id) VALUES 
+(1, 'Center 1', 'Alger', 1),  
+(2, 'Center 2', 'Blida', 1),  
+(3, 'Center 3', 'Boumerdès', 1),  
+(4, 'Center 4', 'Tizi Ouzou', 1),  
+(5, 'Center 5', 'Béjaïa', 1),  
+(6, 'Center 6', 'Jijel', 1),  
+
+(7, 'Center 7', 'Oran', 2),  
+(8, 'Center 8', 'Mostaganem', 2),  
+(9, 'Center 9', 'Sidi Bel Abbès', 2),  
+(10, 'Center 10', 'Tlemcen', 2),  
+(11, 'Center 11', 'Chlef', 2),  
+(12, 'Center 12', 'Saïda', 2),  
+
+(13, 'Center 13', 'Constantine', 3),  
+(14, 'Center 14', 'Sétif', 3),  
+(15, 'Center 15', 'Annaba', 3),  
+(16, 'Center 16', 'Batna', 3),  
+(17, 'Center 17', 'Skikda', 3),  
+(18, 'Center 18', 'Guelma', 3),  
+
+(19, 'Center 19', 'Biskra', 4),  
+(20, 'Center 20', 'Ouargla', 4),  
+(21, 'Center 21', 'Ghardaïa', 4),  
+(22, 'Center 22', 'Tamanrasset', 4),  
+(23, 'Center 23', 'Adrar', 4),  
+(24, 'Center 24', 'Béchar', 4);  
+
+
+
+-- Insert Chauffeurs (3 per center)
+INSERT INTO chauffeurs (nom_complet, email, telephone, centre_id) VALUES
+('Ahmed Belkacem', 'ahmed.belkacem@example.com', '+213610001234', 1),
+('Mohamed Lamine', 'mohamed.lamine@example.com', '+213610001235', 1),
+('Sofiane Meziane', 'sofiane.meziane@example.com', '+213610001236', 1),
+
+('Hichem Bougherara', 'hichem.bougherara@example.com', '+213610001237', 2),
+('Noureddine Slimani', 'noureddine.slimani@example.com', '+213610001238', 2),
+('Farid Bensaid', 'farid.bensaid@example.com', '+213610001239', 2),
+
+('Karim Djelloul', 'karim.djelloul@example.com', '+213610001240', 3),
+('Ali Aouadi', 'ali.aouadi@example.com', '+213610001241', 3),
+('Rachid Ouali', 'rachid.ouali@example.com', '+213610001242', 3),
+
+('Amine Chibani', 'amine.chibani@example.com', '+213610001243', 4),
+('Yassine Loucif', 'yassine.loucif@example.com', '+213610001244', 4),
+('Mourad Benyoucef', 'mourad.benyoucef@example.com', '+213610001245', 4),
+
+('Zaki Mekhloufi', 'zaki.mekhloufi@example.com', '+213610001246', 5),
+('Ismail Mokrani', 'ismail.mokrani@example.com', '+213610001247', 5),
+('Omar Larbi', 'omar.larbi@example.com', '+213610001248', 5),
+
+('Khaled Bousselham', 'khaled.bousselham@example.com', '+213610001249', 6),
+('Nassim Ferhat', 'nassim.ferhat@example.com', '+213610001250', 6),
+('Redouane Saadi', 'redouane.saadi@example.com', '+213610001251', 6);
+
+-- Insert Vehicules (4 per center)
+INSERT INTO vehicules (nom, modele, matricule, chauffeur_assigne_id, centre_id) VALUES
+('Peugeot Boxer', '2022', '1452-NA-23', 1, 1),
+('Renault Kangoo', '2021', '2365-NA-23', 2, 1),
+('Toyota Hilux', '2023', '8574-NA-23', 3, 1),
+('Mercedes Sprinter', '2020', '5698-NA-23', NULL, 1),
+
+('Ford Transit', '2021', '7841-NA-24', 4, 2),
+('Nissan NV350', '2022', '9632-NA-24', 5, 2),
+('Citroën Jumper', '2023', '4125-NA-24', 6, 2),
+('Iveco Daily', '2020', '8754-NA-24', NULL, 2),
+
+('Hyundai H-1', '2021', '2584-NA-25', 7, 3),
+('Volkswagen Crafter', '2022', '3952-NA-25', 8, 3),
+('Chevrolet Express', '2023', '7412-NA-25', 9, 3),
+('Fiat Ducato', '2020', '6589-NA-25', NULL, 3),
+
+('Peugeot Partner', '2021', '3658-NA-26', 10, 4),
+('Renault Master', '2022', '4963-NA-26', 11, 4),
+('Toyota ProAce', '2023', '7521-NA-26', 12, 4),
+('Mercedes Vito', '2020', '1493-NA-26', NULL, 4),
+
+('Ford Ranger', '2021', '8593-NA-27', 13, 5),
+('Nissan Navara', '2022', '9461-NA-27', 14, 5),
+('Citroën Berlingo', '2023', '3175-NA-27', 15, 5),
+('Iveco Eurocargo', '2020', '7842-NA-27', NULL, 5),
+
+('Hyundai Staria', '2021', '2536-NA-28', 16, 6),
+('Volkswagen Transporter', '2022', '3985-NA-28', 17, 6),
+('Chevrolet Silverado', '2023', '7419-NA-28', 18, 6),
+('Fiat Scudo', '2020', '6523-NA-28', NULL, 6);
+
+
+
+
+INSERT INTO carte_transaction (
+  type_transaction, date_transaction, id_chauffeur, id_vehicule, id_centre, 
+  numero_serie, montant, produit, quantite
+) VALUES
+-- Ahmed Belkacem (id = 1)
+('debit', '2025-01-10', 1, 1, 1, 'CARD001', 1520.00, 'diesel', 40.00),
+('debit', '2025-04-12', 1, 1, 1, 'CARD001', 1900.00, 'essence', 50.00),
+('debit', '2025-07-20', 1, 1, 1, 'CARD001', 2280.00, 'diesel', 60.00),
+
+-- Mohamed Lamine (id = 2)
+('debit', '2025-02-08', 2, 2, 1, 'CARD002', 1800.00, 'diesel', 45.00),
+('debit', '2025-06-10', 2, 2, 1, 'CARD002', 2000.00, 'essence', 52.00),
+('debit', '2025-09-18', 2, 2, 1, 'CARD002', 2300.00, 'diesel', 62.00),
+
+-- Sofiane Meziane (id = 3)
+('debit', '2025-03-15', 3, 3, 1, 'CARD003', 1700.00, 'essence', 43.00),
+('debit', '2025-05-25', 3, 3, 1, 'CARD003', 1950.00, 'diesel', 48.00),
+('debit', '2025-08-30', 3, 3, 1, 'CARD003', 2100.00, 'essence', 56.00),
+
+-- Hichem Bougherara (id = 4)
+('debit', '2025-01-22', 4, 4, 2, 'CARD004', 1600.00, 'diesel', 42.00),
+('debit', '2025-04-15', 4, 4, 2, 'CARD004', 1850.00, 'essence', 49.00),
+('debit', '2025-07-11', 4, 4, 2, 'CARD004', 2200.00, 'diesel', 59.00),
+
+-- Noureddine Slimani (id = 5)
+('debit', '2025-02-28', 5, 5, 2, 'CARD005', 1780.00, 'essence', 44.00),
+('debit', '2025-06-05', 5, 5, 2, 'CARD005', 1980.00, 'diesel', 50.00),
+('debit', '2025-10-12', 5, 5, 2, 'CARD005', 2250.00, 'essence', 61.00),
+
+-- Farid Bensaid (id = 6)
+('debit', '2025-03-10', 6, 6, 2, 'CARD006', 1690.00, 'diesel', 41.00),
+('debit', '2025-05-18', 6, 6, 2, 'CARD006', 1900.00, 'essence', 47.00),
+('debit', '2025-08-25', 6, 6, 2, 'CARD006', 2190.00, 'diesel', 58.00);
+
+INSERT INTO carte_transaction (
+  type_transaction, date_transaction, id_chauffeur, id_vehicule, id_centre, 
+  numero_serie, montant, produit, quantite
+) VALUES
+-- Ahmed Belkacem (id = 1)
+('debit', '2024-01-10', 1, 1, 1, 'CARD001', 1450.00, 'diesel', 38.00),
+('debit', '2024-04-12', 1, 1, 1, 'CARD001', 1850.00, 'essence', 48.00),
+('debit', '2024-07-20', 1, 1, 1, 'CARD001', 2200.00, 'diesel', 58.00),
+
+-- Mohamed Lamine (id = 2)
+('debit', '2024-02-08', 2, 2, 1, 'CARD002', 1750.00, 'diesel', 43.00),
+('debit', '2024-06-10', 2, 2, 1, 'CARD002', 1950.00, 'essence', 51.00),
+('debit', '2024-09-18', 2, 2, 1, 'CARD002', 2250.00, 'diesel', 61.00),
+
+-- Sofiane Meziane (id = 3)
+('debit', '2024-03-15', 3, 3, 1, 'CARD003', 1650.00, 'essence', 42.00),
+('debit', '2024-05-25', 3, 3, 1, 'CARD003', 1900.00, 'diesel', 47.00),
+('debit', '2024-08-30', 3, 3, 1, 'CARD003', 2050.00, 'essence', 55.00),
+
+-- Hichem Bougherara (id = 4)
+('debit', '2024-01-22', 4, 4, 2, 'CARD004', 1550.00, 'diesel', 41.00),
+('debit', '2024-04-15', 4, 4, 2, 'CARD004', 1800.00, 'essence', 47.00),
+('debit', '2024-07-11', 4, 4, 2, 'CARD004', 2150.00, 'diesel', 57.00),
+
+-- Noureddine Slimani (id = 5)
+('debit', '2024-02-28', 5, 5, 2, 'CARD005', 1720.00, 'essence', 42.00),
+('debit', '2024-06-05', 5, 5, 2, 'CARD005', 1920.00, 'diesel', 49.00),
+('debit', '2024-10-12', 5, 5, 2, 'CARD005', 2180.00, 'essence', 60.00),
+
+-- Farid Bensaid (id = 6)
+('debit', '2024-03-10', 6, 6, 2, 'CARD006', 1600.00, 'diesel', 40.00),
+('debit', '2024-05-18', 6, 6, 2, 'CARD006', 1850.00, 'essence', 46.00),
+('debit', '2024-08-25', 6, 6, 2, 'CARD006', 2100.00, 'diesel', 56.00);
+
+
